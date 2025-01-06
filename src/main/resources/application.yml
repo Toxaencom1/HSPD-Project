@@ -1,0 +1,30 @@
+server:
+  port: 8081
+
+spring:
+  application:
+    name: HSPD
+  liquibase:
+    enabled: false
+  jpa:
+    hibernate:
+      ddl-auto: validate
+    show-sql: false
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+        format_sql: false
+
+  datasource:
+    url: jdbc:postgresql://localhost:5432/postgres
+    username: ${db_username}
+    password: ${db_password}
+    driver-class-name: org.postgresql.Driver
+
+logging:
+  level:
+    org:
+      springframework:
+        security: DEBUG
+    org.hibernate.SQL: DEBUG
+    org.hibernate.type.descriptor.sql.BasicBinder: TRACE
