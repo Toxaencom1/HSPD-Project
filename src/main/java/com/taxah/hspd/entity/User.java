@@ -26,8 +26,9 @@ public class User implements UserDetails {
 
     private String username;
     private String password;
+    private String email;
 
-    @ManyToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    @ManyToMany(fetch = FetchType.EAGER, cascade = {CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH})
     private List<Role> roles;
 
 
@@ -35,8 +36,7 @@ public class User implements UserDetails {
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return roles.stream()
                 .flatMap(role->role.getPermissions().stream())
-                .toList();
-//                .collect(Collectors.toSet());
+                .collect(Collectors.toSet());
     }
 
     @Override
