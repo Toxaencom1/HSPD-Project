@@ -1,6 +1,7 @@
 package com.taxah.hspd.entity;
 
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.taxah.hspd.enums.Roles;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -26,7 +27,7 @@ public class Role {
     private Roles roles;
 
     @ManyToMany(mappedBy = "roles", fetch = FetchType.EAGER, cascade = {CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH})
-//    @JsonIgnore
+    @JsonIgnore
     private List<Permission> permissions;
 
 }

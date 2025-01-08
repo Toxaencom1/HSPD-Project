@@ -1,4 +1,4 @@
-package com.taxah.hspd.exception.error;
+package com.taxah.hspd.exception.dto;
 
 import lombok.Builder;
 import lombok.Data;
@@ -7,7 +7,7 @@ import java.util.UUID;
 
 @Data
 @Builder
-public class StringError {
+public class StringErrorDTO {
     private final UUID errorUUID;
     private String errorMessage;
 }

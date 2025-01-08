@@ -1,17 +1,15 @@
 package com.taxah.hspd.controller;
 
-import com.taxah.hspd.dto.RegisterRequestDTO;
 import com.taxah.hspd.entity.Role;
 import com.taxah.hspd.entity.User;
 import com.taxah.hspd.enums.Roles;
+import com.taxah.hspd.exception.UserNotFoundException;
 import com.taxah.hspd.repository.RoleRepository;
 import com.taxah.hspd.repository.UserRepository;
-import com.taxah.hspd.service.impl.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -23,13 +21,12 @@ import java.util.Optional;
 public class UserController {
     private final UserRepository userRepository;
     private final RoleRepository roleRepository;
-    private final UserService userService;
 
     @GetMapping("/{id}")
     @PreAuthorize("hasAuthority('get_user_permission')")
     public ResponseEntity<User> getUser(@PathVariable Long id) {
         Optional<User> byId = userRepository.findById(id);
-        return byId.map(user -> ResponseEntity.ok().body(user)).orElseGet(() -> ResponseEntity.notFound().build());
+        return byId.map(user -> ResponseEntity.ok().body(user)).orElseThrow(()->new UserNotFoundException("User not found"));
     }
 
     @PostMapping
@@ -45,13 +42,4 @@ public class UserController {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Role " + role + " not found");
         }
     }
-
-    @PostMapping("/register")
-    public ResponseEntity<User> registerUser(@RequestBody RegisterRequestDTO credentials) {
-        User user = userService.registerUser(credentials);
-        return ResponseEntity.status(HttpStatus.CREATED).body(user);
-    }
-
-
-
 }
