@@ -1,3 +1,11 @@
 databaseChangeLog:
   - include:
-      file: db/changelog/sql/01-initial-schema.mysql.sql
+      file: db/changelog/sql/01-initial-schema.postgre.sql
+
+  - changeSet:
+      id: 1
+      author: Toxaencom1
+      changes:
+        - sqlFile:
+            path: classpath:/db/changelog/sql/01-fill-default-roles-and-permissions.sql
+            encoding: UTF-8
