@@ -3,6 +3,7 @@ package com.taxah.hspd.controller;
 import com.taxah.hspd.entity.Role;
 import com.taxah.hspd.entity.User;
 import com.taxah.hspd.enums.Roles;
+import com.taxah.hspd.exception.RoleNotFoundException;
 import com.taxah.hspd.exception.UserNotFoundException;
 import com.taxah.hspd.repository.RoleRepository;
 import com.taxah.hspd.repository.UserRepository;
@@ -12,7 +13,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
 import java.util.Optional;
 
 @RestController
@@ -31,15 +31,19 @@ public class UserController {
 
     @PostMapping
     @PreAuthorize("hasAuthority('post_user_permission')")
-    public ResponseEntity<?> createUser(@RequestParam(value = "role") String role, @RequestBody User user) {
+    public ResponseEntity<User> addRoleToUser(@RequestParam(value = "role") String role, @RequestParam String username) {
         try {
             Roles roles = Roles.valueOf(role);
-            Role byRoles = roleRepository.findByRoles(roles);
-            user.setRoles(List.of(byRoles));
-            User savedUser = userRepository.save(user);
-            return ResponseEntity.status(HttpStatus.CREATED).body(savedUser);
+            Optional<User> user = userRepository.findByUsernameIgnoreCase(username);
+            if (user.isPresent()) {
+                Role existingRole = roleRepository.findByRoles(roles);
+                user.get().addRole(existingRole);
+                User savedUser = userRepository.save(user.get());
+                return ResponseEntity.status(HttpStatus.CREATED).body(savedUser);
+            }else
+                throw new UserNotFoundException("User not found");
         } catch (IllegalArgumentException e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Role " + role + " not found");
+            throw new RoleNotFoundException("Role " + role + " not found");
         }
     }
 }

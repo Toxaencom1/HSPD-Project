@@ -1,11 +1,13 @@
 package com.taxah.hspd.controller.handler;
 
 import com.taxah.hspd.exception.AlreadyExistsException;
+import com.taxah.hspd.exception.RoleNotFoundException;
 import com.taxah.hspd.exception.UserNotFoundException;
 import com.taxah.hspd.exception.dto.StringErrorDTO;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.authorization.AuthorizationDeniedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -18,18 +20,16 @@ public class RestExceptionHandler {
 
     @ExceptionHandler(AlreadyExistsException.class)
     public ResponseEntity<StringErrorDTO> handleUsernameAlreadyExistException(Exception e) {
-        return ResponseEntity.status(HttpStatus.CONFLICT).body(StringErrorDTO.builder()
-                .errorUUID(UUID.randomUUID())
-                .errorMessage(e.getMessage())
-                .build());
+        return stringResponseEntity(HttpStatus.CONFLICT, e.getMessage());
     }
 
-    @ExceptionHandler(exception = {UserNotFoundException.class, BadCredentialsException.class})
-    public ResponseEntity<StringErrorDTO> handleUserNotFoundException(Exception e) {
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(StringErrorDTO.builder()
-                .errorUUID(UUID.randomUUID())
-                .errorMessage(e.getMessage())
-                .build());
+    @ExceptionHandler(exception = {
+            UserNotFoundException.class,
+            RoleNotFoundException.class,
+            BadCredentialsException.class
+    })
+    public ResponseEntity<StringErrorDTO> handleNotFoundException(Exception e) {
+        return stringResponseEntity(HttpStatus.NOT_FOUND, e.getMessage());
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
@@ -40,9 +40,23 @@ public class RestExceptionHandler {
                 )
                 .toList();
 
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(StringErrorDTO.builder()
+        return stringResponseEntity(HttpStatus.BAD_REQUEST, response.toString());
+    }
+
+    @ExceptionHandler(AuthorizationDeniedException.class)
+    public ResponseEntity<StringErrorDTO> handleAccessDenied(Exception e) {
+        return stringResponseEntity(HttpStatus.FORBIDDEN, e.getMessage());
+    }
+
+    @ExceptionHandler(Exception.class)
+    public ResponseEntity<StringErrorDTO> handleGlobalException(Exception e) {
+        return stringResponseEntity(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage());
+    }
+
+    private ResponseEntity<StringErrorDTO> stringResponseEntity(HttpStatus status, String message) {
+        return ResponseEntity.status(status).body(StringErrorDTO.builder()
                 .errorUUID(UUID.randomUUID())
-                .errorMessage(response.toString())
+                .errorMessage(message)
                 .build());
     }
 }

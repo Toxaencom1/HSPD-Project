@@ -85,4 +85,8 @@ public class User implements UserDetails {
     public final int hashCode() {
         return this instanceof HibernateProxy ? ((HibernateProxy) this).getHibernateLazyInitializer().getPersistentClass().hashCode() : getClass().hashCode();
     }
+
+    public void addRole(Role existingRole) {
+        roles.add(existingRole);
+    }
 }
