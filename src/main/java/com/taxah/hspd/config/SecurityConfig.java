@@ -1,7 +1,7 @@
 package com.taxah.hspd.config;
 
 import com.taxah.hspd.controller.filter.JwtAuthenticationFilter;
-import com.taxah.hspd.service.impl.UserService;
+import com.taxah.hspd.service.auth.impl.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

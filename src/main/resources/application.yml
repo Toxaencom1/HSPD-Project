@@ -33,3 +33,7 @@ logging:
 token:
   signing:
     key: ${tokenJWT}
+
+polygonAPI:
+  url: "https://api.polygon.io/v2/aggs/ticker/%s/range/1/day/%s/%s?"
+  apiKey: ${APIKey}

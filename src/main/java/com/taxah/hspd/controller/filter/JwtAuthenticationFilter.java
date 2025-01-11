@@ -1,7 +1,7 @@
 package com.taxah.hspd.controller.filter;
 
-import com.taxah.hspd.service.JwtService;
-import com.taxah.hspd.service.impl.UserService;
+import com.taxah.hspd.service.auth.JwtService;
+import com.taxah.hspd.service.auth.impl.UserService;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;

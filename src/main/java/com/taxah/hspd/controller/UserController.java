@@ -1,12 +1,12 @@
 package com.taxah.hspd.controller;
 
-import com.taxah.hspd.entity.Role;
-import com.taxah.hspd.entity.User;
+import com.taxah.hspd.entity.auth.Role;
+import com.taxah.hspd.entity.auth.User;
 import com.taxah.hspd.enums.Roles;
 import com.taxah.hspd.exception.RoleNotFoundException;
 import com.taxah.hspd.exception.UserNotFoundException;
-import com.taxah.hspd.repository.RoleRepository;
-import com.taxah.hspd.repository.UserRepository;
+import com.taxah.hspd.repository.auth.RoleRepository;
+import com.taxah.hspd.repository.auth.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -19,6 +19,8 @@ import java.util.Optional;
 @RequiredArgsConstructor
 @RequestMapping("/api/user")
 public class UserController {
+    public static final String USER_NOT_FOUND = "User not found";
+    public static final String ROLE_NOT_FOUND = "Role %s not found";
     private final UserRepository userRepository;
     private final RoleRepository roleRepository;
 
@@ -26,12 +28,12 @@ public class UserController {
     @PreAuthorize("hasAuthority('get_user_permission')")
     public ResponseEntity<User> getUser(@PathVariable Long id) {
         Optional<User> byId = userRepository.findById(id);
-        return byId.map(user -> ResponseEntity.ok().body(user)).orElseThrow(()->new UserNotFoundException("User not found"));
+        return byId.map(user -> ResponseEntity.ok().body(user)).orElseThrow(()->new UserNotFoundException(USER_NOT_FOUND));
     }
 
     @PostMapping
     @PreAuthorize("hasAuthority('post_user_permission')")
-    public ResponseEntity<User> addRoleToUser(@RequestParam(value = "role") String role, @RequestParam String username) {
+    public ResponseEntity<User> addRoleToUser(@RequestParam String role, @RequestParam String username) {
         try {
             Roles roles = Roles.valueOf(role);
             Optional<User> user = userRepository.findByUsernameIgnoreCase(username);
@@ -41,9 +43,9 @@ public class UserController {
                 User savedUser = userRepository.save(user.get());
                 return ResponseEntity.status(HttpStatus.CREATED).body(savedUser);
             }else
-                throw new UserNotFoundException("User not found");
+                throw new UserNotFoundException(USER_NOT_FOUND);
         } catch (IllegalArgumentException e) {
-            throw new RoleNotFoundException("Role " + role + " not found");
+            throw new RoleNotFoundException(String.format(ROLE_NOT_FOUND, role));
         }
     }
 }

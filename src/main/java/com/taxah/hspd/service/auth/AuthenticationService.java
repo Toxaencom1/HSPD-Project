@@ -1,15 +1,15 @@
-package com.taxah.hspd.service;
+package com.taxah.hspd.service.auth;
 
 import com.taxah.hspd.dto.JwtResponse;
 import com.taxah.hspd.dto.LoginRequestDTO;
 import com.taxah.hspd.dto.RegisterRequestDTO;
-import com.taxah.hspd.entity.Role;
-import com.taxah.hspd.entity.User;
+import com.taxah.hspd.entity.auth.Role;
+import com.taxah.hspd.entity.auth.User;
 import com.taxah.hspd.enums.Roles;
 import com.taxah.hspd.exception.AlreadyExistsException;
-import com.taxah.hspd.repository.RoleRepository;
-import com.taxah.hspd.repository.UserRepository;
-import com.taxah.hspd.service.impl.UserService;
+import com.taxah.hspd.repository.auth.RoleRepository;
+import com.taxah.hspd.repository.auth.UserRepository;
+import com.taxah.hspd.service.auth.impl.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;

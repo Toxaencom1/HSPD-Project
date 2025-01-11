@@ -1,6 +1,7 @@
-package com.taxah.hspd.entity;
+package com.taxah.hspd.entity.auth;
 
 
+import com.taxah.hspd.exception.AlreadyExistsException;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.proxy.HibernateProxy;
@@ -86,7 +87,10 @@ public class User implements UserDetails {
         return this instanceof HibernateProxy ? ((HibernateProxy) this).getHibernateLazyInitializer().getPersistentClass().hashCode() : getClass().hashCode();
     }
 
-    public void addRole(Role existingRole) {
-        roles.add(existingRole);
+    public void addRole(Role role) {
+        if (roles.contains(role)) {
+            throw new AlreadyExistsException("Role already exists");
+        }
+        roles.add(role);
     }
 }

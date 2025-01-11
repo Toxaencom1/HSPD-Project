@@ -3,7 +3,7 @@ package com.taxah.hspd.controller;
 import com.taxah.hspd.dto.JwtResponse;
 import com.taxah.hspd.dto.LoginRequestDTO;
 import com.taxah.hspd.dto.RegisterRequestDTO;
-import com.taxah.hspd.service.AuthenticationService;
+import com.taxah.hspd.service.auth.AuthenticationService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.PostMapping;

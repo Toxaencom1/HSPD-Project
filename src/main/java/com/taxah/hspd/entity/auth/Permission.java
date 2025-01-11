@@ -1,4 +1,4 @@
-package com.taxah.hspd.entity;
+package com.taxah.hspd.entity.auth;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;

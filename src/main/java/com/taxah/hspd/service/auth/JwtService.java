@@ -1,6 +1,6 @@
-package com.taxah.hspd.service;
+package com.taxah.hspd.service.auth;
 
-import com.taxah.hspd.entity.User;
+import com.taxah.hspd.entity.auth.User;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.io.Decoders;

@@ -1,6 +1,6 @@
-package com.taxah.hspd.repository;
+package com.taxah.hspd.repository.auth;
 
-import com.taxah.hspd.entity.User;
+import com.taxah.hspd.entity.auth.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.Optional;
