@@ -3,8 +3,7 @@ package com.taxah.hspd.controller;
 import com.taxah.hspd.entity.auth.Role;
 import com.taxah.hspd.entity.auth.User;
 import com.taxah.hspd.enums.Roles;
-import com.taxah.hspd.exception.RoleNotFoundException;
-import com.taxah.hspd.exception.UserNotFoundException;
+import com.taxah.hspd.exception.NotFoundException;
 import com.taxah.hspd.repository.auth.RoleRepository;
 import com.taxah.hspd.repository.auth.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -28,7 +27,7 @@ public class UserController {
     @PreAuthorize("hasAuthority('get_user_permission')")
     public ResponseEntity<User> getUser(@PathVariable Long id) {
         Optional<User> byId = userRepository.findById(id);
-        return byId.map(user -> ResponseEntity.ok().body(user)).orElseThrow(()->new UserNotFoundException(USER_NOT_FOUND));
+        return byId.map(user -> ResponseEntity.ok().body(user)).orElseThrow(() -> new NotFoundException(USER_NOT_FOUND));
     }
 
     @PostMapping
@@ -42,10 +41,10 @@ public class UserController {
                 user.get().addRole(existingRole);
                 User savedUser = userRepository.save(user.get());
                 return ResponseEntity.status(HttpStatus.CREATED).body(savedUser);
-            }else
-                throw new UserNotFoundException(USER_NOT_FOUND);
+            } else
+                throw new NotFoundException(USER_NOT_FOUND);
         } catch (IllegalArgumentException e) {
-            throw new RoleNotFoundException(String.format(ROLE_NOT_FOUND, role));
+            throw new NotFoundException(String.format(ROLE_NOT_FOUND, role));
         }
     }
 }

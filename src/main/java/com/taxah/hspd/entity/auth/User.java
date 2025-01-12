@@ -1,6 +1,9 @@
 package com.taxah.hspd.entity.auth;
 
 
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import com.taxah.hspd.entity.polygonAPI.Result;
 import com.taxah.hspd.exception.AlreadyExistsException;
 import jakarta.persistence.*;
@@ -23,6 +26,9 @@ import java.util.stream.Collectors;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
+@JsonIdentityInfo(
+        generator = ObjectIdGenerators.PropertyGenerator.class,
+        property = "id")
 public class User implements UserDetails {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -35,17 +41,16 @@ public class User implements UserDetails {
     @ManyToMany(fetch = FetchType.EAGER, cascade = {CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH})
     private List<Role> roles;
 
-    @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
-    @JoinTable(name = "users_results",
-            joinColumns = @JoinColumn(name = "user_id"),
-            inverseJoinColumns = @JoinColumn(name = "result_id"))
+    @ManyToMany(mappedBy = "users")
+    @JsonIgnore
+    @ToString.Exclude
     private List<Result> results = new ArrayList<>();
 
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return roles.stream()
-                .flatMap(role->role.getPermissions().stream())
+                .flatMap(role -> role.getPermissions().stream())
                 .collect(Collectors.toSet());
     }
 

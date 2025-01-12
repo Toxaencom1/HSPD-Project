@@ -1,5 +1,6 @@
 package com.taxah.hspd.entity.polygonAPI;
 
+import com.fasterxml.jackson.annotation.JsonIdentityReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
@@ -9,7 +10,6 @@ import com.taxah.hspd.utils.EpochMillisToLocalDateDeserializer;
 import com.taxah.hspd.utils.LocalDateToEpochMillisSerializer;
 import jakarta.persistence.*;
 import lombok.*;
-import org.hibernate.proxy.HibernateProxy;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -50,7 +50,11 @@ public class Result {
     @JsonIgnore
     private StockResponseData stockResponseData;
 
-    @ManyToMany(mappedBy = "results")
+    @JsonIdentityReference(alwaysAsId = true)
+    @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
+    @JoinTable(name = "users_results",
+            joinColumns = @JoinColumn(name = "result_id"),
+            inverseJoinColumns = @JoinColumn(name = "user_id"))
     private List<User> users = new ArrayList<>();
 
     @Override
@@ -78,6 +82,13 @@ public class Result {
     @Override
     public int hashCode() {
         return Objects.hash(date, stockResponseData != null ? stockResponseData.getTicker() : null);
+    }
+
+    public void addUser(User user) {
+        if (user != null && user.getId() != null) {
+            users.add(user);
+            user.getResults().add(this);
+        }
     }
 //    @Override
 //    public final boolean equals(Object o) {

@@ -1,8 +1,7 @@
 package com.taxah.hspd.controller.handler;
 
 import com.taxah.hspd.exception.AlreadyExistsException;
-import com.taxah.hspd.exception.RoleNotFoundException;
-import com.taxah.hspd.exception.UserNotFoundException;
+import com.taxah.hspd.exception.NotFoundException;
 import com.taxah.hspd.exception.dto.StringErrorDTO;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -24,8 +23,7 @@ public class RestExceptionHandler {
     }
 
     @ExceptionHandler(exception = {
-            UserNotFoundException.class,
-            RoleNotFoundException.class,
+            NotFoundException.class,
             BadCredentialsException.class
     })
     public ResponseEntity<StringErrorDTO> handleNotFoundException(Exception e) {

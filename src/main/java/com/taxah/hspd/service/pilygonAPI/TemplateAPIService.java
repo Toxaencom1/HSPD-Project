@@ -17,7 +17,7 @@ import java.time.format.DateTimeFormatter;
 
 @Service
 @RequiredArgsConstructor
-public class StockGetService {
+public class TemplateAPIService {
     @Value("${polygonAPI.url}")
     private String url;
     @Value("${polygonAPI.apiKey}")
@@ -28,7 +28,7 @@ public class StockGetService {
     public StockResponseData getData(String ticker, LocalDate dateFrom, LocalDate dateTo) {
         String from = dateFormating(dateFrom);
         String to = dateFormating(dateTo);
-        String uriString = UriComponentsBuilder.fromUri(URI.create(String.format(url, ticker,from,to)))
+        String uriString = UriComponentsBuilder.fromUri(URI.create(String.format(url, ticker, from, to)))
                 .queryParam("adjusted", "true")
                 .queryParam("sort", "asc")
                 .queryParam("apiKey", apiKey)
