@@ -8,6 +8,7 @@ import java.io.IOException;
 import java.time.LocalDate;
 import java.time.ZoneId;
 
+@Deprecated
 public class LocalDateToEpochMillisSerializer extends JsonSerializer<LocalDate> {
 
     @Override

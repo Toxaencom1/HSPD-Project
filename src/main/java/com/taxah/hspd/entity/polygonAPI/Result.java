@@ -4,10 +4,8 @@ import com.fasterxml.jackson.annotation.JsonIdentityReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
-import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.taxah.hspd.entity.auth.User;
 import com.taxah.hspd.utils.EpochMillisToLocalDateDeserializer;
-import com.taxah.hspd.utils.LocalDateToEpochMillisSerializer;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -27,11 +25,11 @@ import java.util.Objects;
 public class Result {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @JsonIgnore
     private Long id;
 
     @JsonProperty("t")
     @JsonDeserialize(using = EpochMillisToLocalDateDeserializer.class)
-    @JsonSerialize(using = LocalDateToEpochMillisSerializer.class)
     private LocalDate date;
 
     @JsonProperty("o")
@@ -55,7 +53,15 @@ public class Result {
     @JoinTable(name = "users_results",
             joinColumns = @JoinColumn(name = "result_id"),
             inverseJoinColumns = @JoinColumn(name = "user_id"))
+    @JsonIgnore
     private List<User> users = new ArrayList<>();
+
+    public void addUser(User user) {
+        if (user != null && user.getId() != null) {
+            users.add(user);
+            user.getResults().add(this);
+        }
+    }
 
     @Override
     public String toString() {
@@ -83,52 +89,4 @@ public class Result {
     public int hashCode() {
         return Objects.hash(date, stockResponseData != null ? stockResponseData.getTicker() : null);
     }
-
-    public void addUser(User user) {
-        if (user != null && user.getId() != null) {
-            users.add(user);
-            user.getResults().add(this);
-        }
-    }
-//    @Override
-//    public final boolean equals(Object o) {
-//        if (this == o) return true;
-//        if (o == null) return false;
-//
-//        // Проверка классов с учетом HibernateProxy
-//        Class<?> oEffectiveClass = o instanceof HibernateProxy
-//                ? ((HibernateProxy) o).getHibernateLazyInitializer().getPersistentClass()
-//                : o.getClass();
-//
-//        Class<?> thisEffectiveClass = this instanceof HibernateProxy
-//                ? ((HibernateProxy) this).getHibernateLazyInitializer().getPersistentClass()
-//                : this.getClass();
-//
-//        if (!thisEffectiveClass.equals(oEffectiveClass)) return false;
-//
-//        // Приведение объекта
-//        Result result = (Result) o;
-//
-//        // Сравнение ID, если они существуют
-////        if (id != null && result.id != null) {
-////            return id.equals(result.id);
-////        }
-//
-//        // Если ID отсутствуют, сравниваем по уникальным полям
-//        return Objects.equals(date, result.date) &&
-//                Objects.equals(stockResponseData.getTicker(), result.stockResponseData.getTicker());
-//    }
-//
-//    @Override
-//    public final int hashCode() {
-//        // Учитываем класс с HibernateProxy
-//        Class<?> effectiveClass = this instanceof HibernateProxy
-//                ? ((HibernateProxy) this).getHibernateLazyInitializer().getPersistentClass()
-//                : getClass();
-//
-//        // Если ID есть, используем его, иначе берем уникальные поля
-//        return id != null
-//                ? Objects.hash(effectiveClass, id)
-//                : Objects.hash(effectiveClass, date, stockResponseData != null ? stockResponseData.getTicker() : null);
-//    }
 }

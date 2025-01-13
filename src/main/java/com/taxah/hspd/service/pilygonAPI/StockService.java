@@ -1,5 +1,6 @@
 package com.taxah.hspd.service.pilygonAPI;
 
+import com.taxah.hspd.dto.HistoricalStockPricesData;
 import com.taxah.hspd.entity.auth.User;
 import com.taxah.hspd.entity.polygonAPI.Result;
 import com.taxah.hspd.entity.polygonAPI.StockResponseData;
@@ -13,10 +14,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 
 @Service
 @RequiredArgsConstructor
@@ -33,10 +31,7 @@ public class StockService {
         if (userOptional.isPresent()) {
             user = userOptional.get();
 
-            List<Result> apiResults = templateAPIService.getData(ticker, startDate, endDate).getResults();
-            if (apiResults.isEmpty()) {
-                throw new NotFoundException("No ticker found for " + ticker);
-            }
+            List<Result> apiResults = getNewApiResults(ticker, startDate, endDate);
 
             Optional<StockResponseData> yourTickerOptional = stockResponseDataRepository.findByTicker(ticker);
             if (yourTickerOptional.isPresent()) {
@@ -72,6 +67,14 @@ public class StockService {
         }
     }
 
+    private List<Result> getNewApiResults(String ticker, LocalDate startDate, LocalDate endDate) {
+        List<Result> apiResults = templateAPIService.getData(ticker, startDate, endDate).getResults();
+        if (apiResults.isEmpty()) {
+            throw new NotFoundException("No ticker found for " + ticker);
+        }
+        return apiResults;
+    }
+
     private void addUserToExistedResults(String ticker, LocalDate startDate, LocalDate endDate, User user) {
         List<Result> existedInDataBaseResults = resultRepository.findByDateAndTicker(ticker, startDate, endDate);
         if (!existedInDataBaseResults.isEmpty()) {
@@ -82,5 +85,20 @@ public class StockService {
             });
             resultRepository.saveAllAndFlush(existedInDataBaseResults);
         }
+    }
+
+    public HistoricalStockPricesData getSavedInfo(String username, String ticker) {
+        Optional<StockResponseData> byTicker = stockResponseDataRepository.findByTicker(ticker);
+        byTicker.orElseThrow(()->new NotFoundException("No saved ticker found for " + ticker));
+        Optional<User> userOptional = userRepository.findByUsernameIgnoreCase(username);
+        if (userOptional.isPresent()) {
+            Long id = userOptional.get().getId();
+            List<Result> resultsByUserAndTicker = resultRepository.findResultsByUserAndTicker(id, ticker);
+            return HistoricalStockPricesData.builder()
+                    .ticker(byTicker.get().getTicker())
+                    .results(resultsByUserAndTicker)
+                    .build();
+        } else
+            throw new NotFoundException("User not found");
     }
 }

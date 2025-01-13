@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.Optional;
 
+@Deprecated
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/user")
