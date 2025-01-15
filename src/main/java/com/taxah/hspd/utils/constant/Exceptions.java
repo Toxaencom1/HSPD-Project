@@ -7,7 +7,6 @@ import lombok.NoArgsConstructor;
 public class Exceptions {
     public static final String USER_NOT_FOUND = "User not found";
     public static final String USER_NOT_FOUND_FORMATTED = "User '%s' not found";
-    public static final String INVALID_INPUT_DATA = "";
     public static final String ROLE_NOT_FOUND_FORMATTED = "Role %s not found";
     public static final String EMAIL_ALREADY_EXISTS = "Email already exists";
     public static final String USERNAME_ALREADY_EXISTS = "Username already exists";

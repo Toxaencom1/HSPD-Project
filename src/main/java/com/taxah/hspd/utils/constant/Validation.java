@@ -15,9 +15,7 @@ public class Validation {
     public static final String TICKER_CANNOT_BE_EMPTY = TICKER + CANNOT_BE_EMPTY;
     public static final String START_MUST_BE_EARLIER_END_DATE = "Start должен быть раньше End даты";
     public static final String START_CANNOT_BE_NULL = START + CANNOT_BE_NULL;
-    public static final String START_CANNOT_BE_EMPTY = START + CANNOT_BE_EMPTY;
     public static final String END_CANNOT_BE_NULL = END + CANNOT_BE_NULL;
-    public static final String END_CANNOT_BE_EMPTY = END + CANNOT_BE_EMPTY;
     public static final String START_MUST_BE_NOT_LATER_THAN_PRESENT_TIME = START + MUST_BE_NOT_LATER_THAN_PRESENT_TIME;
     public static final String END_MUST_BE_NOT_LATER_THAN_PRESENT_TIME = END + MUST_BE_NOT_LATER_THAN_PRESENT_TIME;
 
