@@ -1,8 +1,6 @@
 package com.taxah.hspd.repository.polygonAPI;
 
-import com.taxah.hspd.entity.auth.User;
 import com.taxah.hspd.entity.polygonAPI.Result;
-import jakarta.transaction.Transactional;
 import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;

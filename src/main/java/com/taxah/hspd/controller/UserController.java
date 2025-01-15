@@ -6,6 +6,9 @@ import com.taxah.hspd.enums.Roles;
 import com.taxah.hspd.exception.NotFoundException;
 import com.taxah.hspd.repository.auth.RoleRepository;
 import com.taxah.hspd.repository.auth.UserRepository;
+import com.taxah.hspd.utils.constant.Endpoints;
+import com.taxah.hspd.utils.constant.Exceptions;
+import com.taxah.hspd.utils.constant.Security;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -17,22 +20,20 @@ import java.util.Optional;
 @Deprecated
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/user")
+@RequestMapping(Endpoints.API_USER)
 public class UserController {
-    public static final String USER_NOT_FOUND = "User not found";
-    public static final String ROLE_NOT_FOUND = "Role %s not found";
     private final UserRepository userRepository;
     private final RoleRepository roleRepository;
 
-    @GetMapping("/{id}")
-    @PreAuthorize("hasAuthority('get_user_permission')")
+    @GetMapping(Endpoints.ID)
+    @PreAuthorize(Security.USER_AUTHORITY)
     public ResponseEntity<User> getUser(@PathVariable Long id) {
         Optional<User> byId = userRepository.findById(id);
-        return byId.map(user -> ResponseEntity.ok().body(user)).orElseThrow(() -> new NotFoundException(USER_NOT_FOUND));
+        return byId.map(user -> ResponseEntity.ok().body(user)).orElseThrow(() -> new NotFoundException(Exceptions.USER_NOT_FOUND));
     }
 
     @PostMapping
-    @PreAuthorize("hasAuthority('post_user_permission')")
+    @PreAuthorize(Security.ADD_ROLE_AUTHORITY)
     public ResponseEntity<User> addRoleToUser(@RequestParam String role, @RequestParam String username) {
         try {
             Roles roles = Roles.valueOf(role);
@@ -43,9 +44,9 @@ public class UserController {
                 User savedUser = userRepository.save(user.get());
                 return ResponseEntity.status(HttpStatus.CREATED).body(savedUser);
             } else
-                throw new NotFoundException(USER_NOT_FOUND);
+                throw new NotFoundException(String.format(Exceptions.USER_NOT_FOUND_FORMATTED, username));
         } catch (IllegalArgumentException e) {
-            throw new NotFoundException(String.format(ROLE_NOT_FOUND, role));
+            throw new NotFoundException(String.format(Exceptions.ROLE_NOT_FOUND_FORMATTED, role));
         }
     }
 }

@@ -3,6 +3,7 @@ package com.taxah.hspd.config;
 import com.taxah.hspd.controller.filter.JwtAuthenticationFilter;
 import com.taxah.hspd.controller.handler.AuthExceptionHandler;
 import com.taxah.hspd.service.auth.impl.UserService;
+import com.taxah.hspd.utils.constant.Endpoints;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -15,7 +16,6 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
@@ -33,8 +33,8 @@ public class SecurityConfig {
     SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         return http.csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests((requests) -> requests
-                        .requestMatchers("/api/user/register", "/api/user/login").permitAll()
-                        .requestMatchers("/swagger-ui/**", "/swagger-resources/*", "/v3/api-docs/**").permitAll()
+                        .requestMatchers(Endpoints.API_USER_REGISTER, Endpoints.API_USER_LOGIN).permitAll()
+                        .requestMatchers(Endpoints.SW_UI, Endpoints.SW_RESOURCES, Endpoints.SW_API_DOCS).permitAll()
                         .anyRequest().authenticated())
                 .sessionManagement(manager -> manager.sessionCreationPolicy(STATELESS))
                 .authenticationProvider(authenticationProvider())

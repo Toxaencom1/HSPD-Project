@@ -9,12 +9,17 @@ import com.taxah.hspd.exception.NotFoundException;
 import com.taxah.hspd.repository.auth.UserRepository;
 import com.taxah.hspd.repository.polygonAPI.ResultRepository;
 import com.taxah.hspd.repository.polygonAPI.StockResponseDataRepository;
+import com.taxah.hspd.utils.constant.Exceptions;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
-import java.util.*;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Optional;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -28,68 +33,74 @@ public class StockService {
     public StockResponseData saveStockData(String username, String ticker, LocalDate startDate, LocalDate endDate) {
         final User user;
         Optional<User> userOptional = userRepository.findByUsernameIgnoreCase(username);
-        if (userOptional.isPresent()) {
-            user = userOptional.get();
+        userOptional.orElseThrow(() -> new NotFoundException(String.format(Exceptions.USER_NOT_FOUND_FORMATTED, username)));
+        user = userOptional.get();
 
-            List<Result> apiResults = getNewApiResults(ticker, startDate, endDate);
+        List<Result> apiResults = getNewApiResults(ticker, startDate, endDate);
 
-            Optional<StockResponseData> yourTickerOptional = stockResponseDataRepository.findByTicker(ticker);
-            if (yourTickerOptional.isPresent()) {
-                StockResponseData yourTicker = yourTickerOptional.get();
+        Optional<StockResponseData> yourTickerOptional = stockResponseDataRepository.findByTicker(ticker);
+        if (yourTickerOptional.isPresent()) {
+            StockResponseData yourTicker = yourTickerOptional.get();
+            List<Result> existedInDatabaseResults = resultRepository.findByDateAndTicker(yourTicker.getTicker(), startDate, endDate);
 
-                addUserToExistedResults(ticker, startDate, endDate, user);
+            boolean usersAdded = addUserToExistedResults(user, existedInDatabaseResults);
 
-                apiResults.forEach(result -> result.setStockResponseData(yourTicker));
-                Set<Result> apiResultsSet = new HashSet<>(apiResults);
+            apiResults.forEach(result -> result.setStockResponseData(yourTicker));
+            apiResults = subtractLists(apiResults, existedInDatabaseResults);
 
-                List<Result> yourTickerResults = yourTicker.getResults();
-                Set<Result> existedResults = new HashSet<>(yourTickerResults);
-
-                apiResultsSet.removeAll(existedResults);
-
-                if (!apiResultsSet.isEmpty()) {
-                    apiResultsSet.forEach(result -> result.addUser(user));
-                    Set<Result> afterRemoveSet = new HashSet<>(apiResultsSet);
-                    yourTickerResults.addAll(afterRemoveSet);
-                } else
-                    throw new AlreadyExistsException("Data already exists for " + ticker);
-
-                return stockResponseDataRepository.save(yourTicker);
-            } else {
+            if (!apiResults.isEmpty()) {
                 apiResults.forEach(result -> result.addUser(user));
-                return stockResponseDataRepository.save(StockResponseData.builder()
-                        .ticker(ticker)
-                        .results(apiResults)
-                        .build());
-            }
+                resultRepository.saveAll(apiResults);
+                return yourTicker;
+            } else if (usersAdded) {
+                return yourTicker;
+            } else
+                throw new AlreadyExistsException(String.format(Exceptions.DATA_ALREADY_EXISTS_FORMATTED, ticker, startDate, endDate));
         } else {
-            throw new NotFoundException("User not found");
+            StockResponseData newTicker = StockResponseData.builder()
+                    .ticker(ticker)
+                    .build();
+            apiResults.forEach(result -> {
+                result.addUser(user);
+                result.setStockResponseData(newTicker);
+            });
+            newTicker.setResults(apiResults);
+            return stockResponseDataRepository.save(newTicker);
         }
     }
 
     private List<Result> getNewApiResults(String ticker, LocalDate startDate, LocalDate endDate) {
         List<Result> apiResults = templateAPIService.getData(ticker, startDate, endDate).getResults();
         if (apiResults.isEmpty()) {
-            throw new NotFoundException("No ticker found for " + ticker);
+            throw new NotFoundException(String.format(Exceptions.NO_TICKER_FOUND_FORMATTED, ticker));
         }
         return apiResults;
     }
 
-    private void addUserToExistedResults(String ticker, LocalDate startDate, LocalDate endDate, User user) {
-        List<Result> existedInDataBaseResults = resultRepository.findByDateAndTicker(ticker, startDate, endDate);
+    private boolean addUserToExistedResults(User user, List<Result> existedInDataBaseResults) {
+        boolean flag = false;
         if (!existedInDataBaseResults.isEmpty()) {
-            existedInDataBaseResults.forEach(result -> {
+            for (Result result : existedInDataBaseResults) {
                 if (!result.getUsers().contains(user)) {
                     result.getUsers().add(user);
+                    flag = true;
                 }
-            });
+            }
             resultRepository.saveAllAndFlush(existedInDataBaseResults);
         }
+        return flag;
+    }
+
+    public List<Result> subtractLists(List<Result> mainList, List<Result> subtractiveList) {
+        Set<Result> subtractedSet = new HashSet<>(subtractiveList);
+        return mainList.stream()
+                .filter(result -> !subtractedSet.contains(result))
+                .collect(Collectors.toList());
     }
 
     public HistoricalStockPricesData getSavedInfo(String username, String ticker) {
         Optional<StockResponseData> byTicker = stockResponseDataRepository.findByTicker(ticker);
-        byTicker.orElseThrow(()->new NotFoundException("No saved ticker found for " + ticker));
+        byTicker.orElseThrow(() -> new NotFoundException(String.format(Exceptions.NO_SAVED_TICKER_FOUND_FORMATTED, ticker)));
         Optional<User> userOptional = userRepository.findByUsernameIgnoreCase(username);
         if (userOptional.isPresent()) {
             Long id = userOptional.get().getId();
@@ -99,6 +110,6 @@ public class StockService {
                     .results(resultsByUserAndTicker)
                     .build();
         } else
-            throw new NotFoundException("User not found");
+            throw new NotFoundException(String.format(Exceptions.USER_NOT_FOUND_FORMATTED, username));
     }
 }

@@ -1,5 +1,6 @@
 package com.taxah.hspd.dto;
 
+import com.taxah.hspd.utils.constant.Validation;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 import lombok.Builder;
@@ -8,10 +9,18 @@ import lombok.Data;
 @Data
 @Builder
 public class LoginRequestDTO {
-    @Size(min = 3, max = 50, message = "Имя пользователя должно содержать от 3 до 50 символов")
-    @NotBlank(message = "Имя пользователя не может быть пустыми")
+    @Size(
+            min = Validation.USERNAME_MIN_LENGTH,
+            max = Validation.USERNAME_MAX_LENGTH,
+            message = Validation.USERNAME_MUST_CONTAIN_CHARACTERS
+    )
+    @NotBlank(message = Validation.USERNAME_CANNOT_BE_EMPTY)
     private String username;
-    @Size(min = 4, max = 255, message = "Длина пароля должна быть от 4 до 255 символов")
-    @NotBlank(message = "Пароль не может быть пустыми")
+    @Size(
+            min = Validation.PASSWORD_MIN_LENGTH,
+            max = Validation.PASSWORD_MAX_LENGTH,
+            message = Validation.PASSWORD_MUST_CONTAIN_CHARACTERS
+    )
+    @NotBlank(message = Validation.PASSWORD_CANNOT_BE_BLANK)
     private String password;
 }

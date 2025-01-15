@@ -17,6 +17,12 @@ import java.util.function.Function;
 
 @Service
 public class JwtService {
+    public static final String ID = "id";
+    public static final String EMAIL = "email";
+    public static final String ROLE = "role";
+    public static final String AUTHORITIES = "authorities";
+    public static final int TOKEN_LIFE_DURATION = 1000 * 60 * 60 * 24;
+
     @Value("${token.signing.key}")
     private String jwtSigningKey;
 
@@ -27,10 +33,10 @@ public class JwtService {
     public String generateToken(UserDetails userDetails) {
         Map<String, Object> claims = new HashMap<>();
         if (userDetails instanceof User customUserDetails) {
-            claims.put("id", customUserDetails.getId());
-            claims.put("email", customUserDetails.getEmail());
-            claims.put("role", customUserDetails.getRoles());
-            claims.put("authorities", customUserDetails.getAuthorities());
+            claims.put(ID, customUserDetails.getId());
+            claims.put(EMAIL, customUserDetails.getEmail());
+            claims.put(ROLE, customUserDetails.getRoles());
+            claims.put(AUTHORITIES, customUserDetails.getAuthorities());
         }
         return generateToken(claims, userDetails);
     }
@@ -50,7 +56,7 @@ public class JwtService {
                 .claims(extraClaims)
                 .subject(userDetails.getUsername())
                 .issuedAt(new Date(System.currentTimeMillis()))
-                .expiration(new Date(System.currentTimeMillis() + 1000 * 60 * 60 * 24)) // 24 часа
+                .expiration(new Date(System.currentTimeMillis() + TOKEN_LIFE_DURATION)) // 24 часа
                 .signWith(getSigningKey())
                 .compact();
     }

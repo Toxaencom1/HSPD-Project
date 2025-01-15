@@ -1,6 +1,7 @@
 package com.taxah.hspd.service.auth.impl;
 
 import com.taxah.hspd.repository.auth.UserRepository;
+import com.taxah.hspd.utils.constant.Exceptions;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -16,6 +17,6 @@ public class UserService implements UserDetailsService {
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         return userRepository.findByUsernameIgnoreCase(username)
-                .orElseThrow(() -> new UsernameNotFoundException("User not found with username: " + username));
+                .orElseThrow(() -> new UsernameNotFoundException(String.format(Exceptions.USER_NOT_FOUND_FORMATTED, username)));
     }
 }

@@ -10,6 +10,7 @@ import com.taxah.hspd.exception.AlreadyExistsException;
 import com.taxah.hspd.repository.auth.RoleRepository;
 import com.taxah.hspd.repository.auth.UserRepository;
 import com.taxah.hspd.service.auth.impl.UserService;
+import com.taxah.hspd.utils.constant.Exceptions;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -57,8 +58,8 @@ public class AuthenticationService {
                         .build();
                 return userRepository.save(user);
             } else
-                throw new AlreadyExistsException("Email already exists");
+                throw new AlreadyExistsException(Exceptions.EMAIL_ALREADY_EXISTS);
         } else
-            throw new AlreadyExistsException("Username already exists");
+            throw new AlreadyExistsException(Exceptions.USERNAME_ALREADY_EXISTS);
     }
 }

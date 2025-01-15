@@ -2,6 +2,7 @@ package com.taxah.hspd.controller.filter;
 
 import com.taxah.hspd.service.auth.JwtService;
 import com.taxah.hspd.service.auth.impl.UserService;
+import com.taxah.hspd.utils.constant.Security;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -22,8 +23,6 @@ import java.io.IOException;
 @Component
 @RequiredArgsConstructor
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
-    public static final String BEARER_PREFIX = "Bearer ";
-    public static final String HEADER_NAME = "Authorization";
     private final JwtService jwtService;
     private final UserService userService;
 
@@ -32,14 +31,14 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                                     @NonNull HttpServletResponse response,
                                     @NonNull FilterChain filterChain) throws ServletException, IOException {
         // Получаем токен из заголовка
-        var authHeader = request.getHeader(HEADER_NAME);
-        if (StringUtils.isEmpty(authHeader) || !StringUtils.startsWith(authHeader, BEARER_PREFIX)) {
+        var authHeader = request.getHeader(Security.HEADER_NAME);
+        if (StringUtils.isEmpty(authHeader) || !StringUtils.startsWith(authHeader, Security.BEARER_PREFIX)) {
             filterChain.doFilter(request, response);
             return;
         }
 
         // Обрезаем префикс и получаем имя пользователя из токена
-        var jwt = authHeader.substring(BEARER_PREFIX.length());
+        var jwt = authHeader.substring(Security.BEARER_PREFIX.length());
         var username = jwtService.extractUserName(jwt);
 
         if (StringUtils.isNotEmpty(username) && SecurityContextHolder.getContext().getAuthentication() == null) {

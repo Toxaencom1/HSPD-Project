@@ -1,6 +1,7 @@
 package com.taxah.hspd.service.pilygonAPI;
 
 import com.taxah.hspd.entity.polygonAPI.StockResponseData;
+import com.taxah.hspd.utils.DateTimeCustomFormatter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
@@ -13,43 +14,48 @@ import org.springframework.web.util.UriComponentsBuilder;
 
 import java.net.URI;
 import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
 
 @Service
 @RequiredArgsConstructor
 public class TemplateAPIService {
+    public static final String ADJUSTED = "adjusted";
+    public static final String SORT = "sort";
+    public static final String API_KEY = "apiKey";
+    public static final String TRUE = "true";
+    public static final String ASC = "asc";
+    public static final String ACCEPT = "Accept";
+    public static final String APPLICATION_JSON = "application/*json";
+
     @Value("${polygonAPI.url}")
     private String url;
     @Value("${polygonAPI.apiKey}")
     private String apiKey;
 
     private final RestTemplate template;
+    private final DateTimeCustomFormatter formatter;
 
     public StockResponseData getData(String ticker, LocalDate dateFrom, LocalDate dateTo) {
-        String from = dateFormating(dateFrom);
-        String to = dateFormating(dateTo);
+        String from = formatter.format(dateFrom);
+        String to = formatter.format(dateTo);
         String uriString = UriComponentsBuilder.fromUri(URI.create(String.format(url, ticker, from, to)))
-                .queryParam("adjusted", "true")
-                .queryParam("sort", "asc")
-                .queryParam("apiKey", apiKey)
+                .queryParam(ADJUSTED, TRUE)
+                .queryParam(SORT, ASC)
+                .queryParam(API_KEY, apiKey)
                 .toUriString();
         HttpHeaders headers = new HttpHeaders();
-        headers.set("Accept", "application/*json");
+        headers.set(ACCEPT, APPLICATION_JSON);
 
         HttpEntity<String> entity = new HttpEntity<>(headers);
 
         ResponseEntity<StockResponseData> response = template.exchange(
-                uriString,                       // URL запроса
-                HttpMethod.GET,            // HTTP метод
-                entity,                    // Заголовки запроса
-                StockResponseData.class  // Класс ожидаемого ответа
+                uriString,
+                HttpMethod.GET,
+                entity,
+                StockResponseData.class
         );
 
         return response.getBody();
     }
 
-    private String dateFormating(LocalDate date) {
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-        return date.format(formatter);
-    }
+
 }

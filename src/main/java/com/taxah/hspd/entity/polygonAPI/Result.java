@@ -4,8 +4,10 @@ import com.fasterxml.jackson.annotation.JsonIdentityReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.taxah.hspd.entity.auth.User;
 import com.taxah.hspd.utils.EpochMillisToLocalDateDeserializer;
+import com.taxah.hspd.utils.LocalDateToEpochMillisSerializer;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -30,6 +32,7 @@ public class Result {
 
     @JsonProperty("t")
     @JsonDeserialize(using = EpochMillisToLocalDateDeserializer.class)
+    @JsonSerialize(using = LocalDateToEpochMillisSerializer.class)
     private LocalDate date;
 
     @JsonProperty("o")
