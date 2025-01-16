@@ -16,7 +16,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping(Endpoints.API_USER)
+@RequestMapping(Endpoints.API_DATA)
 @RequiredArgsConstructor
 public class StockController implements StockControllerSwagger {
     private final StockService stockService;
@@ -30,7 +30,7 @@ public class StockController implements StockControllerSwagger {
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
-    @GetMapping(Endpoints.SAVED)
+    @GetMapping(Endpoints.FETCH)
     public ResponseEntity<HistoricalStockPricesData> getSavedInfoByTicker(@RequestParam String ticker) {
         String username = getAuthenticationUsername();
 

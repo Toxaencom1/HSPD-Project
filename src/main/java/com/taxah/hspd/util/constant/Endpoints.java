@@ -6,8 +6,9 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class Endpoints {
     public static final String API_USER = "/api/user";
+    public static final String API_DATA = "/api/data";
     public static final String SAVE = "/save";
-    public static final String SAVED = "/saved";
+    public static final String FETCH = "/fetch";
     public static final String REGISTER = "/register";
     public static final String LOGIN = "/login";
     public static final String API_USER_REGISTER = API_USER + REGISTER;
