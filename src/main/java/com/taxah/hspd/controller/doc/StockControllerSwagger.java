@@ -8,13 +8,16 @@ import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 
+@Tag(name = "Работа с данными", description = "API для сохранения и просмотра данных.")
 public interface StockControllerSwagger {
 
     @Operation(
             description = "Сохраняет данные о акциях в приложении.",
+            summary = "- Сохранение",
             responses = {
                     @ApiResponse(responseCode = "200", description = "Данные успешно сохранены."),
                     @ApiResponse(
@@ -41,6 +44,7 @@ public interface StockControllerSwagger {
 
     @Operation(
             description = "Получает сохраненную информацию о ценах акций по тикеру.",
+            summary = "- Получение",
             parameters = {
                     @Parameter(
                             name = "ticker",

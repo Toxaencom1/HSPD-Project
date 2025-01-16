@@ -8,13 +8,15 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.http.MediaType;
 
-
+@Tag(name = "Вход/Регистрация в приложение", description = "API для регистрации и входа в приложение.")
 public interface AuthControllerSwagger {
 
     @Operation(
             description = "Endpoint для регистрации пользователя в приложении.",
+            summary = "- Регистрация",
             responses = {
                     @ApiResponse(description = "Регистрация успешно завершена", responseCode = "200", content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE, schema = @Schema(implementation = JwtResponse.class))),
                     @ApiResponse(description = "Строковое сообщение об ошибке валидации данных переданных пользователем.",
@@ -33,6 +35,7 @@ public interface AuthControllerSwagger {
 
     @Operation(
             description = "Endpoint для идентификации пользователя в приложении.",
+            summary = "- Вход",
             responses = {
                     @ApiResponse(description = "Вход успешно выполнен",responseCode = "200", content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE, schema = @Schema(implementation = JwtResponse.class))),
                     @ApiResponse(description = "Строковое сообщение об ошибке валидации данных переданных пользователем.",

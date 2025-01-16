@@ -31,6 +31,7 @@ public class GetStockResponseDataDTO {
     @PastOrPresent(message = Validations.END_MUST_BE_NOT_LATER_THAN_PRESENT_TIME)
     private LocalDate end;
 
+    @Schema(hidden = true)
     @AssertTrue(message = Validations.START_MUST_BE_EARLIER_END_DATE)
     public boolean isStartBeforeEnd() {
         if (start == null || end == null) {

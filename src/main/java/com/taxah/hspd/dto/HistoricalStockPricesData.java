@@ -14,14 +14,15 @@ import java.util.List;
 public class HistoricalStockPricesData {
     @Schema(description = "Уникальный идентификатор акции.", example = "AAPL")
     private String ticker;
-    @Schema(description = "Список результатов.", example = "\"results\": [\n" +
-            "        {\n" +
-            "            \"t\": \"2023-01-17\",\n" +
-            "            \"o\": 134.83,\n" +
-            "            \"c\": 135.94,\n" +
-            "            \"h\": 137.29,\n" +
-            "            \"l\": 134.13\n" +
-            "        }]")
+    @Schema(description = "Список результатов.", example = """
+            "results": [
+                    {
+                        "t": "2023-01-17",
+                        "o": 134.83,
+                        "c": 135.94,
+                        "h": 137.29,
+                        "l": 134.13
+                    }]""")
     private List<Result> results;
 
     @Schema(description = "Количество результатов в списке.", example = "12")

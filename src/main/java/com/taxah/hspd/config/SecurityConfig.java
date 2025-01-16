@@ -36,6 +36,7 @@ public class SecurityConfig {
     SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         return http.csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests((requests) -> requests
+                        .requestMatchers(Endpoints.TEST_INFO_PATH).permitAll()
                         .requestMatchers(Endpoints.API_USER_REGISTER, Endpoints.API_USER_LOGIN).permitAll()
                         .requestMatchers(Endpoints.SW_UI, Endpoints.SW_RESOURCES, Endpoints.SW_API_DOCS).permitAll()
                         .anyRequest().authenticated())

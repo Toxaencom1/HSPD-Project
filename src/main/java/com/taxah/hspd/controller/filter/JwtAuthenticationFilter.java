@@ -30,14 +30,6 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     protected void doFilterInternal(@NonNull HttpServletRequest request,
                                     @NonNull HttpServletResponse response,
                                     @NonNull FilterChain filterChain) throws ServletException, IOException {
-        String uri = request.getRequestURI();
-
-        // Пропускаем разрешённые пути
-        if (uri.startsWith("/swagger-ui/") || uri.startsWith("/swagger-resources/") || uri.startsWith("/v3/api-docs")) {
-            filterChain.doFilter(request, response);
-            return;
-        }
-
         // Получаем токен из заголовка
         var authHeader = request.getHeader(Security.HEADER_NAME);
         if (StringUtils.isEmpty(authHeader) || !StringUtils.startsWith(authHeader, Security.BEARER_PREFIX)) {

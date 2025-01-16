@@ -7,12 +7,5 @@ databaseChangeLog:
       author: Toxaencom1
       changes:
         - sqlFile:
-            path: classpath:/db/changelog/sql/01-fill-default-roles-and-permissions.sql
-            encoding: UTF-8
-  - changeSet:
-      id: 2
-      author: Toxaencom1
-      changes:
-        - sqlFile:
             path: classpath:/db/changelog/sql/02-added-api_entities.postgre.sql
             encoding: UTF-8

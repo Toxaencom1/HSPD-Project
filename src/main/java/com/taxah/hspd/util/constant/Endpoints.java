@@ -16,4 +16,6 @@ public class Endpoints {
     public static final String SW_RESOURCES = "/swagger-resources/*";
     public static final String SW_API_DOCS = "/v3/api-docs/**";
     public static final String PATH_VARIABLE_ID = "/{id}";
+    public static final String TEST_INFO_ENDPOINT = "/api/info/test";
+    public static final String TEST_INFO_PATH = "/api/info/**";
 }
