@@ -6,6 +6,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.taxah.hspd.entity.auth.User;
 import com.taxah.hspd.util.EpochMillisToLocalDateDeserializer;
+import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -24,6 +25,7 @@ import java.util.Objects;
 @Table(name = "results", uniqueConstraints = {
         @UniqueConstraint(columnNames = {"date", "stock_response_data_id"})
 })
+@Schema(description = "Сущность результата")
 public class Result {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -32,18 +34,23 @@ public class Result {
 
     @JsonProperty("t")
     @JsonDeserialize(using = EpochMillisToLocalDateDeserializer.class)
+    @Schema(name = "date", description = "Дата акции", example = "2025-01-01")
     private LocalDate date;
 
     @JsonProperty("o")
+    @Schema(name = "open", description = "Цена открытия", example = "134.83")
     private BigDecimal open;
 
     @JsonProperty("c")
+    @Schema(name = "close", description = "Цена закрытия", example = "134.83")
     private BigDecimal close;
 
     @JsonProperty("h")
+    @Schema(name = "high", description = "Максимальная цена", example = "134.83")
     private BigDecimal high;
 
     @JsonProperty("l")
+    @Schema(name = "low", description = "Минимальная цена", example = "134.83")
     private BigDecimal low;
 
     @ManyToOne

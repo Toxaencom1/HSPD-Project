@@ -4,6 +4,7 @@ import com.taxah.hspd.dto.GetStockResponseDataDTO;
 import com.taxah.hspd.dto.HistoricalStockPricesData;
 import com.taxah.hspd.exception.dto.StringErrorDTO;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -40,6 +41,14 @@ public interface StockControllerSwagger {
 
     @Operation(
             description = "Получает сохраненную информацию о ценах акций по тикеру.",
+            parameters = {
+                    @Parameter(
+                            name = "ticker",
+                            description = "Уникальный идентификатор акции.",
+                            example = "AAPL",
+                            required = true
+                    )
+            },
             responses = {
                     @ApiResponse(
                             responseCode = "200",

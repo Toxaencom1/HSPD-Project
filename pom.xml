@@ -30,6 +30,7 @@
 		<java.version>17</java.version>
         <lombok.version>1.18.36</lombok.version>
 		<jjwt.version>0.12.6</jjwt.version>
+		<swagger-webmvc-ui.version>2.7.0</swagger-webmvc-ui.version>
 	</properties>
 	<dependencies>
 		<dependency>
@@ -101,7 +102,7 @@
 		<dependency>
 			<groupId>org.springdoc</groupId>
 			<artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>
-			<version>2.7.0</version>
+			<version>${swagger-webmvc-ui.version}</version>
 		</dependency>
 	</dependencies>
 

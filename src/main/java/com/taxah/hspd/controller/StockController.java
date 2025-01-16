@@ -3,7 +3,6 @@ package com.taxah.hspd.controller;
 import com.taxah.hspd.controller.doc.StockControllerSwagger;
 import com.taxah.hspd.dto.GetStockResponseDataDTO;
 import com.taxah.hspd.dto.HistoricalStockPricesData;
-import com.taxah.hspd.entity.polygonAPI.StockResponseData;
 import com.taxah.hspd.service.pilygonAPI.StockService;
 import com.taxah.hspd.util.constant.Endpoints;
 import com.taxah.hspd.util.constant.Exceptions;
