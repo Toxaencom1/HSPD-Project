@@ -1,4 +1,4 @@
-package com.taxah.hspd.utils.constant;
+package com.taxah.hspd.util.constant;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
@@ -15,5 +15,5 @@ public class Endpoints {
     public static final String SW_UI = "/swagger-ui/**";
     public static final String SW_RESOURCES = "/swagger-resources/*";
     public static final String SW_API_DOCS = "/v3/api-docs/**";
-    public static final String ID = "/{id}";
+    public static final String PATH_VARIABLE_ID = "/{id}";
 }

@@ -6,9 +6,9 @@ import com.taxah.hspd.enums.Roles;
 import com.taxah.hspd.exception.NotFoundException;
 import com.taxah.hspd.repository.auth.RoleRepository;
 import com.taxah.hspd.repository.auth.UserRepository;
-import com.taxah.hspd.utils.constant.Endpoints;
-import com.taxah.hspd.utils.constant.Exceptions;
-import com.taxah.hspd.utils.constant.Security;
+import com.taxah.hspd.util.constant.Endpoints;
+import com.taxah.hspd.util.constant.Exceptions;
+import com.taxah.hspd.util.constant.Security;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -25,7 +25,7 @@ public class UserController {
     private final UserRepository userRepository;
     private final RoleRepository roleRepository;
 
-    @GetMapping(Endpoints.ID)
+    @GetMapping(Endpoints.PATH_VARIABLE_ID)
     @PreAuthorize(Security.USER_AUTHORITY)
     public ResponseEntity<User> getUser(@PathVariable Long id) {
         Optional<User> byId = userRepository.findById(id);

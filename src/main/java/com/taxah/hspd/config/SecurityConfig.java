@@ -3,8 +3,9 @@ package com.taxah.hspd.config;
 import com.taxah.hspd.controller.filter.JwtAuthenticationFilter;
 import com.taxah.hspd.controller.handler.AuthExceptionHandler;
 import com.taxah.hspd.service.auth.impl.UserService;
-import com.taxah.hspd.utils.constant.Endpoints;
+import com.taxah.hspd.util.constant.Endpoints;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -25,6 +26,8 @@ import static org.springframework.security.config.http.SessionCreationPolicy.STA
 @EnableMethodSecurity
 @RequiredArgsConstructor
 public class SecurityConfig {
+    @Value("${bcrypt.strength}")
+    private int bcryptStrength;
     private final UserService userService;
     private final JwtAuthenticationFilter jwtAuthenticationFilter;
     private final AuthExceptionHandler authExceptionHandler;
@@ -60,6 +63,6 @@ public class SecurityConfig {
 
     @Bean
     public PasswordEncoder passwordEncoder() {
-        return new BCryptPasswordEncoder(12);
+        return new BCryptPasswordEncoder(bcryptStrength);
     }
 }

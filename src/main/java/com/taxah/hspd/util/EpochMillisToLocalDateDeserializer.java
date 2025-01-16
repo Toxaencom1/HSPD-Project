@@ -1,4 +1,4 @@
-package com.taxah.hspd.utils;
+package com.taxah.hspd.util;
 
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonProcessingException;

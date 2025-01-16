@@ -1,4 +1,4 @@
-package com.taxah.hspd.utils.constant;
+package com.taxah.hspd.util.constant;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;

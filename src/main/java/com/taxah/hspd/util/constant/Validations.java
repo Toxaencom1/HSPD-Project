@@ -1,10 +1,10 @@
-package com.taxah.hspd.utils.constant;
+package com.taxah.hspd.util.constant;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public class Validation {
+public class Validations {
     public static final String CANNOT_BE_NULL = " не может быть null";
     public static final String CANNOT_BE_EMPTY = " не может быть пустым";
     public static final String MUST_BE_NOT_LATER_THAN_PRESENT_TIME = " должен быть не позже настоящего времени";
@@ -24,7 +24,6 @@ public class Validation {
     public static final String USERNAME_MUST_CONTAIN_CHARACTERS = "Имя пользователя должно содержать от " +
             USERNAME_MIN_LENGTH + " до " + USERNAME_MAX_LENGTH + " символов";
     public static final String USERNAME_CANNOT_BE_EMPTY = "Имя пользователя не может быть пустыми";
-
 
     public static final int PASSWORD_MIN_LENGTH = 4;
     public static final int PASSWORD_MAX_LENGTH = 60;

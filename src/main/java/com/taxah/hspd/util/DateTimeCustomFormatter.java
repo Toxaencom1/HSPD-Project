@@ -1,6 +1,6 @@
-package com.taxah.hspd.utils;
+package com.taxah.hspd.util;
 
-import com.taxah.hspd.utils.constant.Constants;
+import com.taxah.hspd.util.constant.Constants;
 import jakarta.annotation.PostConstruct;
 import lombok.Getter;
 import org.springframework.stereotype.Component;
@@ -19,6 +19,6 @@ public class DateTimeCustomFormatter {
 
     @PostConstruct
     public void setFormatter() {
-        this.formatter = DateTimeFormatter.ofPattern(Constants.DATE_FORMAT);
+        this.formatter = DateTimeFormatter.ofPattern(Constants.LOCAL_DATE_FORMAT);
     }
 }

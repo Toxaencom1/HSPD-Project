@@ -1,4 +1,4 @@
-package com.taxah.hspd.utils.constant;
+package com.taxah.hspd.util.constant;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
@@ -14,4 +14,5 @@ public class Exceptions {
     public static final String NO_TICKER_FOUND_FORMATTED = "No ticker found for %s";
     public static final String NO_SAVED_TICKER_FOUND_FORMATTED = "No saved ticker found for %s";
     public static final String USER_IS_NOT_AUTHENTICATED = "User is not authenticated. Please log in.";
+    public static final String NO_DATA_FOUND_FORMATTED = "No data found in database for %s";
 }

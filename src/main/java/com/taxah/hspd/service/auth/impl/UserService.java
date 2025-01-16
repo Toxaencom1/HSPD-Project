@@ -1,7 +1,7 @@
 package com.taxah.hspd.service.auth.impl;
 
 import com.taxah.hspd.repository.auth.UserRepository;
-import com.taxah.hspd.utils.constant.Exceptions;
+import com.taxah.hspd.util.constant.Exceptions;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;

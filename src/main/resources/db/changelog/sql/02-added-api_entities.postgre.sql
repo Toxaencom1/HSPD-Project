@@ -41,3 +41,8 @@ ALTER TABLE "users_results"
 -- changeset Toxaencom1:1736510294885-20
 ALTER TABLE "users_results"
     ADD CONSTRAINT "fkfmtu5dr01ademsdvbt1d8kl56" FOREIGN KEY ("result_id") REFERENCES "results" ("id") ON UPDATE NO ACTION ON DELETE NO ACTION;
+
+-- changeset Toxaencom1:1736510294885-21
+ALTER TABLE results
+    ADD CONSTRAINT unique_date_and_stock_response_data_id
+        UNIQUE (date, stock_response_data_id);

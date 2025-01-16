@@ -1,6 +1,6 @@
 package com.taxah.hspd.dto;
 
-import com.taxah.hspd.utils.constant.Validation;
+import com.taxah.hspd.util.constant.Validations;
 import jakarta.validation.constraints.AssertTrue;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -15,19 +15,19 @@ import java.time.LocalDate;
 public class GetStockResponseDataDTO {
 
 
-    @NotNull(message = Validation.TICKER_CANNOT_BE_NULL)
-    @NotBlank(message = Validation.TICKER_CANNOT_BE_EMPTY)
+    @NotNull(message = Validations.TICKER_CANNOT_BE_NULL)
+    @NotBlank(message = Validations.TICKER_CANNOT_BE_EMPTY)
     private String ticker;
 
-    @NotNull(message = Validation.START_CANNOT_BE_NULL)
-    @PastOrPresent(message = Validation.START_MUST_BE_NOT_LATER_THAN_PRESENT_TIME)
+    @NotNull(message = Validations.START_CANNOT_BE_NULL)
+    @PastOrPresent(message = Validations.START_MUST_BE_NOT_LATER_THAN_PRESENT_TIME)
     private LocalDate start;
 
-    @NotNull(message = Validation.END_CANNOT_BE_NULL)
-    @PastOrPresent(message = Validation.END_MUST_BE_NOT_LATER_THAN_PRESENT_TIME)
+    @NotNull(message = Validations.END_CANNOT_BE_NULL)
+    @PastOrPresent(message = Validations.END_MUST_BE_NOT_LATER_THAN_PRESENT_TIME)
     private LocalDate end;
 
-    @AssertTrue(message = Validation.START_MUST_BE_EARLIER_END_DATE)
+    @AssertTrue(message = Validations.START_MUST_BE_EARLIER_END_DATE)
     public boolean isStartBeforeEnd() {
         if (start == null || end == null) {
             return true;

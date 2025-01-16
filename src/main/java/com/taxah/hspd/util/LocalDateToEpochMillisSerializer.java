@@ -1,4 +1,4 @@
-package com.taxah.hspd.utils;
+package com.taxah.hspd.util;
 
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.databind.JsonSerializer;
@@ -9,7 +9,7 @@ import org.springframework.stereotype.Component;
 import java.io.IOException;
 import java.time.LocalDate;
 
-
+@Deprecated
 @Component
 @RequiredArgsConstructor
 public class LocalDateToEpochMillisSerializer extends JsonSerializer<LocalDate> {

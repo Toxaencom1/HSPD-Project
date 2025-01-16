@@ -48,6 +48,11 @@ public class RestExceptionHandler {
 
     @ExceptionHandler(Exception.class)
     public ResponseEntity<StringErrorDTO> handleGlobalException(Exception e) {
+        return stringResponseEntity(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage() + "\ncause: " + e.getCause());
+    }
+
+    @ExceptionHandler(NullPointerException.class)
+    public ResponseEntity<StringErrorDTO> handleNullPointerException(Exception e) {
         return stringResponseEntity(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage());
     }
 
