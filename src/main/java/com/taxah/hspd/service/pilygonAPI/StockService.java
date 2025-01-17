@@ -47,18 +47,17 @@ public class StockService {
 
     public HistoricalStockPricesData getSavedInfo(String username, String ticker) {
         Optional<User> userOptional = userRepository.findByUsernameIgnoreCase(username);
-        userOptional.orElseThrow(() -> new NotFoundException(String.format(Exceptions.USER_NOT_FOUND_F, username)));
+        Long userId = userOptional.orElseThrow(() -> new NotFoundException(String.format(Exceptions.USER_NOT_FOUND_F, username))).getId();
         Optional<StockResponseData> byTicker = stockResponseDataRepository.findByTicker(ticker);
-        byTicker.orElseThrow(() -> new NotFoundException(String.format(Exceptions.NO_SAVED_TICKER_FOUND_F, ticker)));
+        StockResponseData stockResponseData = byTicker.orElseThrow(() -> new NotFoundException(String.format(Exceptions.NO_SAVED_TICKER_FOUND_F, ticker)));
 
-        Long userId = userOptional.get().getId();
         List<Result> resultsByUserAndTicker = resultRepository.findResultsByUserAndTicker(userId, ticker);
 
         if (resultsByUserAndTicker.isEmpty()) {
             throw new NotFoundException(String.format(Exceptions.NO_DATA_FOUND_F, ticker));
         }
         return HistoricalStockPricesData.builder()
-                .ticker(byTicker.get().getTicker())
+                .ticker(stockResponseData.getTicker())
                 .results(resultsByUserAndTicker)
                 .build();
     }
