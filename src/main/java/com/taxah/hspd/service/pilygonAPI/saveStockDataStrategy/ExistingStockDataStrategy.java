@@ -6,8 +6,8 @@ import com.taxah.hspd.entity.polygonAPI.StockResponseData;
 import com.taxah.hspd.exception.AlreadyExistsException;
 import com.taxah.hspd.repository.polygonAPI.ResultRepository;
 import com.taxah.hspd.util.constant.Exceptions;
-import lombok.AllArgsConstructor;
 import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Component;
 
 import java.time.LocalDate;
 import java.util.HashSet;
@@ -15,34 +15,32 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+
+@Component
 @RequiredArgsConstructor
-@AllArgsConstructor
 public class ExistingStockDataStrategy implements SaveStockDataStrategy {
-    private final User user;
-    private final StockResponseData existingData;
     private final ResultRepository resultRepository;
-    private List<Result> apiResults;
 
     @Override
-    public StockResponseData apply(User user, String ticker, LocalDate startDate, LocalDate endDate) {
-        List<Result> existedInDatabaseResults = resultRepository.findByDateAndTicker(ticker, startDate, endDate);
+    public StockResponseData apply(List<Result> apiResults, User user, StockResponseData data, LocalDate startDate, LocalDate endDate) {
+        List<Result> existedInDatabaseResults = resultRepository.findByDateAndTicker(data.getTicker(), startDate, endDate);
 
-        boolean usersAdded = addUserToExistedResults(existedInDatabaseResults);
+        boolean userAdded = addUserToExistedResults(user, existedInDatabaseResults);
 
-        apiResults.forEach(result -> result.setStockResponseData(existingData));
+        apiResults.forEach(result -> result.setStockResponseData(data));
         apiResults = subtractLists(apiResults, existedInDatabaseResults);
 
         if (!apiResults.isEmpty()) {
             apiResults.forEach(result -> result.addUser(user));
             resultRepository.saveAll(apiResults);
-            return existingData;
-        } else if (usersAdded) {
-            return existingData;
+            return data;
+        } else if (userAdded) {
+            return data;
         } else
-            throw new AlreadyExistsException(String.format(Exceptions.DATA_ALREADY_EXISTS_FORMATTED, ticker, startDate, endDate));
+            throw new AlreadyExistsException(String.format(Exceptions.DATA_ALREADY_EXISTS_F, data.getTicker(), startDate, endDate));
     }
 
-    private boolean addUserToExistedResults(List<Result> results) {
+    private boolean addUserToExistedResults(User user, List<Result> results) {
         // Stream api не подходит из-за необходимости работать с эффективно финальной переменной
         boolean flag = false;
         for (Result result : results) {

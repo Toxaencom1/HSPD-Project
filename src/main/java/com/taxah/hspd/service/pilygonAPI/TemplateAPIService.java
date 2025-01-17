@@ -1,7 +1,10 @@
 package com.taxah.hspd.service.pilygonAPI;
 
+import com.taxah.hspd.dto.GetStockResponseDataDTO;
+import com.taxah.hspd.entity.polygonAPI.Result;
 import com.taxah.hspd.entity.polygonAPI.StockResponseData;
-import com.taxah.hspd.util.DateTimeCustomFormatter;
+import com.taxah.hspd.exception.NotFoundException;
+import com.taxah.hspd.util.constant.Exceptions;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
@@ -14,6 +17,7 @@ import org.springframework.web.util.UriComponentsBuilder;
 
 import java.net.URI;
 import java.time.LocalDate;
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -32,12 +36,9 @@ public class TemplateAPIService {
     private String apiKey;
 
     private final RestTemplate template;
-    private final DateTimeCustomFormatter formatter;
 
     public StockResponseData getData(String ticker, LocalDate dateFrom, LocalDate dateTo) {
-        String from = formatter.format(dateFrom);
-        String to = formatter.format(dateTo);
-        String uriString = UriComponentsBuilder.fromUri(URI.create(String.format(url, ticker, from, to)))
+        String uriString = UriComponentsBuilder.fromUri(URI.create(String.format(url, ticker, dateFrom, dateTo)))
                 .queryParam(ADJUSTED, ADJUSTED_BOOLEAN)
                 .queryParam(SORT, SORT_TYPE)
                 .queryParam(API_KEY, apiKey)
@@ -57,5 +58,11 @@ public class TemplateAPIService {
         return response.getBody();
     }
 
-
+    public List<Result> getNewApiResults(GetStockResponseDataDTO dataDTO) {
+        List<Result> apiResults = getData(dataDTO.getTicker(), dataDTO.getStart(), dataDTO.getEnd()).getResults();
+        if (apiResults.isEmpty()) {
+            throw new NotFoundException(String.format(Exceptions.NO_TICKER_FOUND_F, dataDTO.getTicker()));
+        }
+        return apiResults;
+    }
 }

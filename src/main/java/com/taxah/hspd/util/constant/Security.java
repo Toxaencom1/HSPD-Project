@@ -7,6 +7,6 @@ import lombok.NoArgsConstructor;
 public class Security {
     public static final String BEARER_PREFIX = "Bearer ";
     public static final String HEADER_NAME = "Authorization";
-    public static final String ADD_ROLE_AUTHORITY = "hasAuthority('post_user_permission')";
-    public static final String USER_AUTHORITY = "hasAuthority('get_user_permission')";
+    public static final String ADD_ROLE_AUTHORITY = "hasAuthority('admin_permission')";
+    public static final String USER_AUTHORITY = "hasAuthority('user_permission')";
 }

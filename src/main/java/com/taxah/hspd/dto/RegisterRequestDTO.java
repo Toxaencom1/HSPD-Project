@@ -4,6 +4,7 @@ import com.taxah.hspd.util.constant.Validations;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 import lombok.Data;
 
@@ -11,6 +12,10 @@ import lombok.Data;
 @Schema(description = "DTO для регистрации в приложении.")
 public class RegisterRequestDTO {
     @Schema(description = "Строка имени пользователя.", example = "TaXaH")
+    @Pattern(
+            regexp = Validations.USERNAME_REGEX,
+            message = Validations.USERNAME_VALIDATION
+    )
     @Size(
             min = Validations.USERNAME_MIN_LENGTH,
             max = Validations.USERNAME_MAX_LENGTH,

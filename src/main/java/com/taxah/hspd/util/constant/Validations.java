@@ -37,4 +37,7 @@ public class Validations {
             EMAIL_MIN_LENGTH + " до " + EMAIL_MAX_LENGTH + " символов";
     public static final String EMAIL_ADDRESS_CANNOT_BE_EMPTY = "Адрес электронной почты не может быть пустыми";
     public static final String EMAIL_ADDRESS_MUST_BE_IN_FORMAT = "Email адрес должен быть в формате user@example.com";
+    public static final String USERNAME_REGEX = "^[a-zA-Z][a-zA-Z0-9._-]{2,19}$";
+    public static final String USERNAME_VALIDATION = "Имя пользователя должно начинаться с буквы и состоять из 3–20 символов и может содержать только буквы, цифры, «.», «_» и «-».";
+
 }

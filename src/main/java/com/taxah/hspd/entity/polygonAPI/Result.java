@@ -58,7 +58,7 @@ public class Result {
     private StockResponseData stockResponseData;
 
     @JsonIdentityReference(alwaysAsId = true)
-    @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
+    @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE}, fetch = FetchType.LAZY)
     @JoinTable(name = "users_results",
             joinColumns = @JoinColumn(name = "result_id"),
             inverseJoinColumns = @JoinColumn(name = "user_id"))
@@ -81,7 +81,7 @@ public class Result {
                 ", close=" + close +
                 ", high=" + high +
                 ", low=" + low +
-                ", srd=" + stockResponseData.getId() +
+//                ", srd=" + stockResponseData.getId() +
                 '}';
     }
 

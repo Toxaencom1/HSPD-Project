@@ -5,25 +5,23 @@ import com.taxah.hspd.entity.polygonAPI.Result;
 import com.taxah.hspd.entity.polygonAPI.StockResponseData;
 import com.taxah.hspd.repository.polygonAPI.StockResponseDataRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Component;
 
 import java.time.LocalDate;
 import java.util.List;
 
 @RequiredArgsConstructor
+@Component
 public class NewStockDataStrategy implements SaveStockDataStrategy {
     private final StockResponseDataRepository stockResponseDataRepository;
-    private final List<Result> apiResults;
 
     @Override
-    public StockResponseData apply(User user, String ticker, LocalDate startDate, LocalDate endDate) {
-        StockResponseData newTicker = StockResponseData.builder()
-                .ticker(ticker)
-                .build();
+    public StockResponseData apply(List<Result> apiResults, User user, StockResponseData data, LocalDate startDate, LocalDate endDate) {
         apiResults.forEach(result -> {
             result.addUser(user);
-            result.setStockResponseData(newTicker);
+            result.setStockResponseData(data);
         });
-        newTicker.setResults(apiResults);
-        return stockResponseDataRepository.save(newTicker);
+        data.setResults(apiResults);
+        return stockResponseDataRepository.save(data);
     }
 }
