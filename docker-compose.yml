@@ -1,0 +1,46 @@
+version: '3.9'
+
+services:
+  hspd:
+    depends_on:
+      - db
+    container_name: hspd-app
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "${APP_PORT:-8080}:8080"
+    environment:
+      - API_KEY=${API_KEY}
+      - SIGNING_KEY=${SIGNING_KEY}
+      - DATASOURCE_URL=jdbc:postgresql://db:${DB_PORT:-5432}/postgres
+      - DB_USERNAME=${DB_USERNAME}
+      - DB_PASSWORD=${DB_PASSWORD}
+      - JAVA_TOOL_OPTIONS=-Duser.timezone=Asia/Aqtobe
+    dns:
+      - 8.8.8.8  # Google DNS
+      - 8.8.4.4
+    networks:
+      - app-network
+#    restart: unless-stopped
+
+  db:
+    container_name: postgreSQL_FOR_DOCKER_HSPD
+    expose:
+      - "${DB_PORT:-5432}"
+    ports:
+      - "${DB_PORT:-5432}:${DB_PORT:-5432}"
+    environment:
+      - POSTGRES_USER=${DB_USERNAME}
+      - POSTGRES_PASSWORD=${DB_PASSWORD}
+    image: postgres:alpine3.19
+    volumes:
+      - ./Data:/var/lib/postgresql/data
+    command: -p ${DB_PORT:-5432}
+    networks:
+      - app-network
+    restart: unless-stopped
+
+networks:
+  app-network:
+    driver: bridge

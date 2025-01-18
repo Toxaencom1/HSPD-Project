@@ -1,49 +1,30 @@
 server:
-  port: 8080
+  port: ${APP_PORT:8080}
   error:
     include-message: always
     include-binding-errors: always
 spring:
   application:
     name: hspd # Historical stock prices data
-  liquibase:
-    enabled: true
-  jpa:
-    hibernate:
-      ddl-auto: validate
-    show-sql: true
-    generate-ddl: true
-    properties:
-      hibernate:
-        dialect: org.hibernate.dialect.PostgreSQLDialect
-        format_sql: false
-        jdbc:
-          batch_size: 450
-        order_inserts: true
-        order_updates: true
-        batch_versioned_data: true
-        batch_fetch_style: dynamic
-        default_batch_fetch_size: 450
-        generate_statistics: false # batch check
-  datasource:
-    url: jdbc:postgresql://localhost:5432/postgres
-    username: ${db_username}
-    password: ${db_password}
-    driver-class-name: org.postgresql.Driver
+  main:
+    allow-bean-definition-overriding: true
+  profiles:
+    active: ${SPRING_PROFILE_ACTIVE:prod}
 
 logging:
   level:
-#    org.springframework.web: DEBUG
-#    org.springframework.security: DEBUG
-    root: info
+    org:
+      springframework:
+        web: DEBUG
+        security: DEBUG
 
 token:
   signing:
-    key: ${tokenJWT}
+    key: ${SIGNING_KEY}
 
 polygonAPI:
   url: "https://api.polygon.io/v2/aggs/ticker/%s/range/1/day/%s/%s?"
-  apiKey: ${APIKey}
+  apiKey: ${API_KEY}
 
 bcrypt:
   strength: 12

@@ -7,6 +7,3 @@ create table errors
         primary key,
     message text
 );
-
-alter table errors
-    owner to postgre;
