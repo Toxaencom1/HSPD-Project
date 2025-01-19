@@ -1,23 +1,4 @@
 spring:
-  liquibase:
-    enabled: true
-  jpa:
-    hibernate:
-      ddl-auto: validate
-    show-sql: true
-    generate-ddl: true
-    properties:
-      hibernate:
-        format_sql: false
-        jdbc:
-          batch_size: 450
-        order_inserts: true
-        order_updates: true
-        batch_versioned_data: true
-        batch_fetch_style: dynamic
-        default_batch_fetch_size: 450
-        generate_statistics: false # batch check
-
   datasource:
     url: ${DATASOURCE_URL:jdbc:postgresql://db:5432/postgres}
     username: ${DB_USERNAME}
