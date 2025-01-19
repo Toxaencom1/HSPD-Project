@@ -8,6 +8,8 @@ import com.taxah.hspd.service.auth.AuthenticationService;
 import com.taxah.hspd.util.constant.Endpoints;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -20,12 +22,12 @@ public class AuthController implements AuthControllerSwagger {
     private final AuthenticationService authenticationService;
 
     @PostMapping(Endpoints.REGISTER)
-    public JwtResponse signUp(@RequestBody @Valid RegisterRequestDTO request) {
-        return authenticationService.signUp(request);
+    public ResponseEntity<JwtResponse> signUp(@RequestBody @Valid RegisterRequestDTO request) {
+        return ResponseEntity.status(HttpStatus.CREATED).body(authenticationService.signUp(request));
     }
 
     @PostMapping(Endpoints.LOGIN)
-    public JwtResponse signIn(@RequestBody @Valid LoginRequestDTO request) {
-        return authenticationService.signIn(request);
+    public ResponseEntity<JwtResponse> signIn(@RequestBody @Valid LoginRequestDTO request) {
+        return ResponseEntity.status(HttpStatus.OK).body(authenticationService.signIn(request));
     }
 }

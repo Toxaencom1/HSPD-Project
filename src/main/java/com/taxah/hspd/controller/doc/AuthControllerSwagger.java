@@ -10,6 +10,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 
 @Tag(name = "Вход/Регистрация в приложение", description = "API для регистрации и входа в приложение.")
 public interface AuthControllerSwagger {
@@ -31,7 +32,7 @@ public interface AuthControllerSwagger {
                     )
             }
     )
-    JwtResponse signUp(RegisterRequestDTO request);
+    ResponseEntity<JwtResponse> signUp(RegisterRequestDTO request);
 
     @Operation(
             description = "Endpoint для идентификации пользователя в приложении.",
@@ -54,5 +55,5 @@ public interface AuthControllerSwagger {
                     )
             }
     )
-    JwtResponse signIn( LoginRequestDTO request);
+    ResponseEntity<JwtResponse> signIn( LoginRequestDTO request);
 }
