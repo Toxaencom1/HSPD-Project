@@ -2,9 +2,11 @@ package com.taxah.hspd.entity.log;
 
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UuidGenerator;
 import org.hibernate.proxy.HibernateProxy;
 
+import java.time.LocalDateTime;
 import java.util.Objects;
 import java.util.UUID;
 
@@ -21,8 +23,15 @@ public class ErrorEntity {
     @GeneratedValue
     @UuidGenerator
     private UUID id;
+
+    private String username;
+
     @Column(columnDefinition = "TEXT")
     private String message;
+
+    @Column(name = "error_timestamp")
+    @CreationTimestamp
+    private LocalDateTime errorTimestamp;
 
     @Override
     public final boolean equals(Object o) {

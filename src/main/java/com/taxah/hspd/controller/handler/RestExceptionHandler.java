@@ -19,13 +19,13 @@ import java.util.List;
 
 @ControllerAdvice
 @RequiredArgsConstructor
-public class RestExceptionHandler {
+public class RestExceptionHandler implements UserAccessHandler {
 
     private final ErrorEntityRepository errorRepository;
 
     @ExceptionHandler(AlreadyExistsException.class)
     public ResponseEntity<StringErrorDTO> handleUsernameAlreadyExistException(Exception e) {
-        return stringResponseEntity(e, HttpStatus.CONFLICT, e.getMessage(), null);
+        return stringResponseEntity(e, HttpStatus.CONFLICT, null);
     }
 
     @ExceptionHandler(exception = {
@@ -33,7 +33,7 @@ public class RestExceptionHandler {
             BadCredentialsException.class
     })
     public ResponseEntity<StringErrorDTO> handleNotFoundException(Exception e) {
-        return stringResponseEntity(e, HttpStatus.NOT_FOUND, e.getMessage(), null);
+        return stringResponseEntity(e, HttpStatus.NOT_FOUND, null);
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
@@ -43,34 +43,36 @@ public class RestExceptionHandler {
                         error.getField() + ": " + error.getDefaultMessage()
                 )
                 .toList();
-        return stringResponseEntity(e, HttpStatus.BAD_REQUEST, response.toString(), response.toString());
+        return stringResponseEntity(e, HttpStatus.BAD_REQUEST, response.toString());
     }
 
     @ExceptionHandler(AuthorizationDeniedException.class)
     public ResponseEntity<StringErrorDTO> handleAccessDenied(Exception e) {
-        return stringResponseEntity(e, HttpStatus.FORBIDDEN, e.getMessage(), null);
+        return stringResponseEntity(e, HttpStatus.FORBIDDEN, null);
     }
 
     @ExceptionHandler(Exception.class)
     public ResponseEntity<StringErrorDTO> handleGlobalException(Exception e) {
-
-        return stringResponseEntity(e, HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage(), "\n\ttrace: " + ExceptionUtils.getStackTrace(e));
+        String extra = "\n\ttrace: " + ExceptionUtils.getStackTrace(e);
+        return stringResponseEntity(e, HttpStatus.INTERNAL_SERVER_ERROR, extra);
     }
 
     @ExceptionHandler(NullPointerException.class)
     public ResponseEntity<StringErrorDTO> handleNullPointerException(Exception e) {
-        return stringResponseEntity(e, HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage(), null);
+        return stringResponseEntity(e, HttpStatus.INTERNAL_SERVER_ERROR, null);
     }
 
-    private ResponseEntity<StringErrorDTO> stringResponseEntity(Exception e, HttpStatus status, String message, String extra) {
+    private ResponseEntity<StringErrorDTO> stringResponseEntity(Exception e, HttpStatus status, String extra) {
+        String username = getAuthenticationUsername();
         ErrorEntity error = errorRepository.save(ErrorEntity.builder()
+                .username(username)
                 .message(
                         (extra != null ? "extra: " + extra + "\n" : "") + "message: " + e.getMessage()
                 )
                 .build());
         return ResponseEntity.status(status).body(StringErrorDTO.builder()
                 .errorUUID(error.getId())
-                .errorMessage(message)
+                .errorMessage(extra != null ? extra : e.getMessage())
                 .build());
     }
 }

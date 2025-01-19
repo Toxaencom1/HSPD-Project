@@ -5,5 +5,7 @@ create table errors
 (
     id      uuid not null
         primary key,
-    message text
+    username varchar(60),
+    message text,
+    error_timestamp timestamp(6) not null
 );

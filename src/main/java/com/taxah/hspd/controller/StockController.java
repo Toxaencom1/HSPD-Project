@@ -1,20 +1,17 @@
 package com.taxah.hspd.controller;
 
 import com.taxah.hspd.controller.doc.StockControllerSwagger;
+import com.taxah.hspd.controller.handler.UserAccessHandler;
 import com.taxah.hspd.dto.GetStockResponseDataDTO;
 import com.taxah.hspd.dto.HistoricalStockPricesData;
 import com.taxah.hspd.entity.polygonAPI.Result;
 import com.taxah.hspd.service.pilygonAPI.StockService;
 import com.taxah.hspd.service.pilygonAPI.TemplateAPIService;
 import com.taxah.hspd.util.constant.Endpoints;
-import com.taxah.hspd.util.constant.Exceptions;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.AccessDeniedException;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -22,7 +19,7 @@ import java.util.List;
 @RestController
 @RequestMapping(Endpoints.API_DATA)
 @RequiredArgsConstructor
-public class StockController implements StockControllerSwagger {
+public class StockController implements StockControllerSwagger, UserAccessHandler {
     private final StockService stockService;
     private final TemplateAPIService templateAPIService;
 
@@ -43,13 +40,5 @@ public class StockController implements StockControllerSwagger {
         HistoricalStockPricesData savedInfo = stockService.getSavedInfo(username, ticker);
 
         return ResponseEntity.status(HttpStatus.OK).body(savedInfo);
-    }
-
-    private static String getAuthenticationUsername() {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        if (authentication == null || !authentication.isAuthenticated()) {
-            throw new AccessDeniedException(Exceptions.USER_IS_NOT_AUTHENTICATED);
-        }
-        return authentication.getName();
     }
 }
