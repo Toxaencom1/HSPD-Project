@@ -10,15 +10,10 @@ import com.taxah.hspd.entity.auth.User;
 import com.taxah.hspd.entity.polygonAPI.Result;
 import com.taxah.hspd.entity.polygonAPI.StockResponseData;
 import com.taxah.hspd.enums.Roles;
-import com.taxah.hspd.exception.NotFoundException;
 import com.taxah.hspd.repository.auth.UserRepository;
 import com.taxah.hspd.repository.polygonAPI.ResultRepository;
-import com.taxah.hspd.repository.polygonAPI.StockResponseDataRepository;
-import com.taxah.hspd.service.pilygonAPI.StockService;
 import com.taxah.hspd.service.pilygonAPI.TemplateAPIService;
-import com.taxah.hspd.util.constant.Exceptions;
 import lombok.SneakyThrows;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -36,11 +31,8 @@ import java.time.LocalDate;
 import java.util.List;
 
 import static com.taxah.hspd.util.constant.Endpoints.*;
-import static com.taxah.hspd.util.constant.Exceptions.TICKER_NOT_FOUND_F;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.mockito.ArgumentMatchers.*;
-import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -52,10 +44,10 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @ActiveProfiles("test")
 class StockControllerTest {
     @Autowired
-     UserRepository userRepository;
+    UserRepository userRepository;
 
     @Autowired
-     ObjectMapper objectMapper;
+    ObjectMapper objectMapper;
 
     @Autowired
     ResultRepository resultRepository;
@@ -105,7 +97,7 @@ class StockControllerTest {
                         .content(requestJson))
                 .andExpect(status().isCreated());
 
-        List<Result> results = resultRepository.findResultsByUserAndTicker(id,dataDTO.getTicker());
+        List<Result> results = resultRepository.findResultsByUserAndTicker(id, dataDTO.getTicker());
 
         assertNotNull(results);
         assertEquals(data.getResults().size(), results.size());
