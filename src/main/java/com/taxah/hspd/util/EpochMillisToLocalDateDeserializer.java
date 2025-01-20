@@ -10,12 +10,22 @@ import java.time.Instant;
 import java.time.LocalDate;
 import java.time.ZoneId;
 
+import static com.taxah.hspd.util.constant.Constants.INVALID_LOCAL_DATE_TOKEN_DESERIALIZATION;
+
 public class EpochMillisToLocalDateDeserializer extends JsonDeserializer<LocalDate> {
+
 
     @Override
     public LocalDate deserialize(JsonParser p, DeserializationContext ctxt)
             throws IOException, JsonProcessingException {
-        long timestamp = p.getLongValue();
-        return Instant.ofEpochMilli(timestamp).atZone(ZoneId.systemDefault()).toLocalDate();
+        if (p.currentToken().isNumeric()) {
+            long timestamp = p.getLongValue();
+            return Instant.ofEpochMilli(timestamp).atZone(ZoneId.systemDefault()).toLocalDate();
+        } else if (p.currentToken().isScalarValue()) {
+            String date = p.getText();
+            return LocalDate.parse(date);
+        } else {
+            throw new IOException(INVALID_LOCAL_DATE_TOKEN_DESERIALIZATION);
+        }
     }
 }

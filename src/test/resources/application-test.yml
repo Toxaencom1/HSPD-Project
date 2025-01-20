@@ -1,0 +1,22 @@
+spring:
+  datasource:
+    driver-class-name: org.testcontainers.jdbc.ContainerDatabaseDriver
+    url: jdbc:tc:postgresql:15://testdb
+    username: testuser
+    password: testpass
+  jpa:
+    hibernate:
+      ddl-auto: update
+    properties:
+      show_sql: true
+      format_sql: true
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+
+token:
+  signing:
+    key: test-signing-key
+
+polygonAPI:
+  url: "https://api.polygon.io/v2/aggs/ticker/%s/range/1/day/%s/%s?"
+  apiKey: test-api
