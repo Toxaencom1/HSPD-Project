@@ -13,7 +13,6 @@ import com.taxah.hspd.repository.auth.UserRepository;
 import com.taxah.hspd.repository.polygonAPI.ResultRepository;
 import com.taxah.hspd.service.pilygonAPI.PolygonService;
 import lombok.SneakyThrows;
-import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
