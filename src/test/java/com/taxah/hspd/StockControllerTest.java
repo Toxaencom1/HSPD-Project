@@ -3,7 +3,6 @@ package com.taxah.hspd;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.taxah.hspd.dto.GetStockResponseDataDTO;
-import com.taxah.hspd.dto.HistoricalStockPricesData;
 import com.taxah.hspd.entity.auth.Permission;
 import com.taxah.hspd.entity.auth.Role;
 import com.taxah.hspd.entity.auth.User;
@@ -12,8 +11,9 @@ import com.taxah.hspd.entity.polygonAPI.StockResponseData;
 import com.taxah.hspd.enums.Roles;
 import com.taxah.hspd.repository.auth.UserRepository;
 import com.taxah.hspd.repository.polygonAPI.ResultRepository;
-import com.taxah.hspd.service.pilygonAPI.TemplateAPIService;
+import com.taxah.hspd.service.pilygonAPI.PolygonService;
 import lombok.SneakyThrows;
+import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -38,6 +38,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+@Slf4j
 @SpringBootTest
 @AutoConfigureMockMvc
 @Testcontainers
@@ -56,27 +57,25 @@ class StockControllerTest {
     MockMvc mockMvc;
 
     @MockitoBean
-    TemplateAPIService templateAPIService;
+    PolygonService polygonService;
 
-    Long id;
+    Long userId;
 
     @BeforeEach
     void setUp() {
-
-        userRepository.deleteAll();
         resultRepository.deleteAll();
+        userRepository.deleteAll();
         Permission userPermission = Permission.builder().name("user_permission").build();
         Role role = Role.builder().roles(Roles.USER).build();
         userPermission.setRoles(List.of(role));
         User user = User.builder()
-
                 .username("user")
                 .password("user")
                 .email("user@mail.test")
                 .roles(List.of(role))
                 .build();
         User saved = userRepository.save(user);
-        id = saved.getId();
+        userId = saved.getId();
     }
 
     @Test
@@ -90,14 +89,15 @@ class StockControllerTest {
         String requestJson = asJsonString(dataDTO);
         StockResponseData data = objectMapper.readValue(new File("src/test/resources/json/ApiResults.json"), StockResponseData.class);
 
-        when(templateAPIService.getNewApiResults(dataDTO)).thenReturn(data.getResults());
+        when(polygonService.getNewApiResults(dataDTO)).thenReturn(data.getResults());
+        when(polygonService.checkTickerInPolygon(dataDTO.getTicker())).thenReturn(true);
 
         mockMvc.perform(post(API_DATA + SAVE)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(requestJson))
                 .andExpect(status().isCreated());
 
-        List<Result> results = resultRepository.findResultsByUserAndTicker(id, dataDTO.getTicker());
+        List<Result> results = resultRepository.findResultsByUserAndTicker(userId, dataDTO.getTicker());
 
         assertNotNull(results);
         assertEquals(data.getResults().size(), results.size());
@@ -109,6 +109,8 @@ class StockControllerTest {
         GetStockResponseDataDTO dataDTO = GetStockResponseDataDTO.builder()
                 .build();
         String requestJson = asJsonString(dataDTO);
+
+        when(polygonService.checkTickerInPolygon(dataDTO.getTicker())).thenReturn(false);
 
         mockMvc.perform(post(API_DATA + SAVE)
                         .contentType(MediaType.APPLICATION_JSON)
@@ -126,33 +128,28 @@ class StockControllerTest {
                 .build();
         String requestJson = asJsonString(dataDTO);
 
-//        doThrow(new NotFoundException(String.format(Exceptions.NO_DATA_FOUND_F, dataDTO.getTicker())))
-//                .when(stockService).saveStockData(anyList(), anyString(), eq(dataDTO));
+        when(polygonService.checkTickerInPolygon(dataDTO.getTicker())).thenReturn(false);
 
         mockMvc.perform(post(API_DATA + SAVE)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(requestJson))
-                .andExpect(status().isNotFound());
+                .andExpect(status().isUnprocessableEntity());
     }
 
     @Test
     @WithMockUser
     void testGetSavedInfoByTicker_Success() throws Exception {
         String ticker = "AAPL";
-        HistoricalStockPricesData savedInfo =
-                objectMapper.readValue(new File("src/test/resources/json/Hspd.json"),
-                        HistoricalStockPricesData.class
-                );
-
         GetStockResponseDataDTO dataDTO = GetStockResponseDataDTO.builder()
-                .ticker("AAPL")
+                .ticker(ticker)
                 .start(LocalDate.of(2023, 1, 1))
                 .end(LocalDate.of(2023, 2, 1))
                 .build();
         String requestJson = asJsonString(dataDTO);
         StockResponseData data = objectMapper.readValue(new File("src/test/resources/json/ApiResults.json"), StockResponseData.class);
 
-        when(templateAPIService.getNewApiResults(dataDTO)).thenReturn(data.getResults());
+        when(polygonService.getNewApiResults(dataDTO)).thenReturn(data.getResults());
+        when(polygonService.checkTickerInPolygon(ticker)).thenReturn(true);
 
         mockMvc.perform(post(API_DATA + SAVE)
                         .contentType(MediaType.APPLICATION_JSON)
@@ -164,6 +161,12 @@ class StockControllerTest {
                         .param("ticker", ticker)
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk());
+
+
+        List<Result> results = resultRepository.findResultsByUserAndTicker(userId, dataDTO.getTicker());
+
+        assertNotNull(results);
+        assertEquals(data.getResults().size(), results.size());
     }
 
     @Test
@@ -171,6 +174,7 @@ class StockControllerTest {
     void testGetSavedInfoByTicker_Fail_TickerNotFound() throws Exception {
         String ticker = "UNKNOWN";
 
+        when(polygonService.checkTickerInPolygon(ticker)).thenReturn(false);
 
         mockMvc.perform(get(API_DATA + FETCH)
                         .param("ticker", ticker)

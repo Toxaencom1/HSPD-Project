@@ -41,7 +41,9 @@ token:
     key: ${SIGNING_KEY}
 
 polygonAPI:
-  url: "https://api.polygon.io/v2/aggs/ticker/%s/range/1/day/%s/%s?"
+  url:
+    main: "https://api.polygon.io/v2/aggs/ticker/%s/range/1/day/%s/%s?"
+    ticker.details: "https://api.polygon.io/v3/reference/tickers/%s"
   apiKey: ${API_KEY}
 
 bcrypt:

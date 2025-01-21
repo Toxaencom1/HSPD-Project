@@ -20,3 +20,10 @@ token:
 polygonAPI:
   url: "https://api.polygon.io/v2/aggs/ticker/%s/range/1/day/%s/%s?"
   apiKey: test-api
+
+logging:
+  level:
+    org:
+      springframework:
+        web: DEBUG
+        security: DEBUG

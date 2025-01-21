@@ -39,4 +39,11 @@ public class GetStockResponseDataDTO {
         }
         return start.isBefore(end) || start.isEqual(end);
     }
+
+    @Builder
+    public GetStockResponseDataDTO(String ticker, LocalDate start, LocalDate end) {
+        this.ticker = ticker != null ? ticker.toUpperCase() : null;
+        this.start = start;
+        this.end = end;
+    }
 }

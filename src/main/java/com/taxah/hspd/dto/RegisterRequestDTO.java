@@ -22,7 +22,7 @@ public class RegisterRequestDTO {
     @NotBlank(message = USERNAME_CANNOT_BE_EMPTY)
     private String username;
 
-    @Schema(description = "Строка пароля пользователя.", example = "***-masked-***")
+    @Schema(description = "Строка пароля пользователя.", example = "password")
     @Size(
             min = PASSWORD_MIN_LENGTH,
             max = PASSWORD_MAX_LENGTH,
