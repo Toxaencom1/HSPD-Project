@@ -45,9 +45,7 @@ public class PolygonFacade {
 
     public HistoricalStockPricesData getSavedInfo(String username, String ticker) {
         Optional<StockResponseData> supported = stockService.getTickerInDatabase(ticker);
-        if (supported.isPresent()) {
-            return stockService.getSavedInfo(username, ticker);
-        } else
-            throw new NotFoundException(String.format(Exceptions.NO_DATA_FOUND_F, ticker));
+        return supported.map(value -> stockService.getSavedInfo(username, ticker))
+                .orElseThrow(()->new NotFoundException(String.format(Exceptions.NO_DATA_FOUND_F, ticker)));
     }
 }
