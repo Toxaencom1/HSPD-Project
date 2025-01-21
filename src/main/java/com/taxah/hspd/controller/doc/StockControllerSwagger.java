@@ -3,6 +3,7 @@ package com.taxah.hspd.controller.doc;
 import com.taxah.hspd.dto.GetStockResponseDataDTO;
 import com.taxah.hspd.dto.HistoricalStockPricesData;
 import com.taxah.hspd.exception.dto.StringErrorDTO;
+import com.taxah.hspd.exception.dto.ValidationErrorDTO;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -70,7 +71,7 @@ public interface StockControllerSwagger {
                             description = "Ошибка валидации данных, переданных пользователем.",
                             responseCode = "400",
                             content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE,
-                                    schema = @Schema(implementation = StringErrorDTO.class))
+                                    schema = @Schema(implementation = ValidationErrorDTO.class))
                     ),
                     @ApiResponse(
                             description = "Доступ к ресурсу запрещен.",
