@@ -12,10 +12,7 @@ import org.hibernate.proxy.HibernateProxy;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Entity
@@ -44,7 +41,7 @@ public class User implements UserDetails {
     @ManyToMany(mappedBy = "users")
     @JsonIgnore
     @ToString.Exclude
-    private List<Result> results = new ArrayList<>();
+    private Set<Result> results = new HashSet<>();
 
 
     @Override

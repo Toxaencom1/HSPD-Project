@@ -18,10 +18,10 @@ public class HistoricalStockPricesData {
             "results": [
                     {
                         "t": "2023-01-17",
-                        "o": 134.83,
-                        "c": 135.94,
-                        "h": 137.29,
-                        "l": 134.13
+                        "o": 134.830,
+                        "c": 135.940,
+                        "h": 137.290,
+                        "l": 134.130
                     }]""")
     private List<Result> results;
 

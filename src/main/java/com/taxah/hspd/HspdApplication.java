@@ -9,6 +9,3 @@ public class HspdApplication {
         SpringApplication.run(HspdApplication.class, args);
     }
 }
-// TODO Подумать насчет констант Swagger
-// TODO Тесты
-

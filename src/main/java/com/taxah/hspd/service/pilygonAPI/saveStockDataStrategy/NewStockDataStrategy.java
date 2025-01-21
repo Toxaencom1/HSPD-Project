@@ -9,11 +9,20 @@ import org.springframework.stereotype.Component;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
 
 @RequiredArgsConstructor
 @Component
 public class NewStockDataStrategy implements SaveStockDataStrategy {
     private final StockResponseDataRepository stockResponseDataRepository;
+
+    @Override
+    public boolean supports(Optional<StockResponseData> optionalTicker, boolean statusInPolygon) {
+        if (optionalTicker.isEmpty()) {
+            return statusInPolygon;
+        }
+        return false;
+    }
 
     @Override
     public StockResponseData apply(List<Result> apiResults, User user, StockResponseData data, LocalDate startDate, LocalDate endDate) {

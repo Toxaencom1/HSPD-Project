@@ -26,9 +26,13 @@ public class StockResponseData {
     @JsonProperty("ticker")
     private String ticker;
 
-    @OneToMany(cascade = CascadeType.PERSIST, orphanRemoval = true, fetch = FetchType.LAZY)
-    @JoinColumn(name = "stock_response_data_id")
+    @OneToMany(mappedBy = "stockResponseData", cascade = CascadeType.PERSIST, orphanRemoval = true, fetch = FetchType.LAZY)
     @JsonProperty("results")
     @BatchSize(size = 450)
     private List<Result> results = new ArrayList<>();
+
+    public void addResult(Result result) {
+        results.add(result);
+        result.setStockResponseData(this);
+    }
 }

@@ -9,47 +9,46 @@ import com.taxah.hspd.exception.NotFoundException;
 import com.taxah.hspd.repository.auth.UserRepository;
 import com.taxah.hspd.repository.polygonAPI.ResultRepository;
 import com.taxah.hspd.repository.polygonAPI.StockResponseDataRepository;
-import com.taxah.hspd.service.pilygonAPI.saveStockDataStrategy.SaveStockDataStrategyFactory;
+import com.taxah.hspd.service.pilygonAPI.saveStockDataStrategy.SaveStockDataStrategy;
 import com.taxah.hspd.util.constant.Exceptions;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class StockService {
     private final StockResponseDataRepository stockResponseDataRepository;
     private final UserRepository userRepository;
     private final ResultRepository resultRepository;
-    private final SaveStockDataStrategyFactory strategyFactory;
 
     @Transactional
-    public StockResponseData saveStockData(List<Result> mutableApiResults, String username, GetStockResponseDataDTO dataDTO) {
-        if (mutableApiResults == null || mutableApiResults.isEmpty()) {
-            throw new NotFoundException(Exceptions.NO_API_RESULTS_FOUND);
-        }
-        Optional<User> userOptional = userRepository.findByUsernameIgnoreCase(username);
-        final User user = userOptional.orElseThrow(() -> new NotFoundException(String.format(Exceptions.USER_NOT_FOUND_F, username)));
-
-        Optional<StockResponseData> stockResponseData = stockResponseDataRepository.findByTicker(dataDTO.getTicker());
-
-        return strategyFactory.getStrategy(stockResponseData)
-                .apply( mutableApiResults,
-                        user,
-                        stockResponseData.orElseGet(()-> StockResponseData.builder().ticker(dataDTO.getTicker()).build()),
-                        dataDTO.getStart(),
-                        dataDTO.getEnd());
+    public StockResponseData saveStockDataByStrategy(SaveStockDataStrategy strategy,
+                                                     List<Result> mutableApiResults,
+                                                     User user,
+                                                     StockResponseData stockResponseData,
+                                                     GetStockResponseDataDTO dataDTO
+    ) {
+        log.info("Applying strategy: " + strategy.getClass().getSimpleName());
+        return strategy.apply(mutableApiResults, user, stockResponseData, dataDTO.getStart(), dataDTO.getEnd());
     }
 
 
     public HistoricalStockPricesData getSavedInfo(String username, String ticker) {
         Optional<User> userOptional = userRepository.findByUsernameIgnoreCase(username);
-        Long userId = userOptional.orElseThrow(() -> new NotFoundException(String.format(Exceptions.USER_NOT_FOUND_F, username))).getId();
-        Optional<StockResponseData> byTicker = stockResponseDataRepository.findByTicker(ticker);
-        StockResponseData stockResponseData = byTicker.orElseThrow(() -> new NotFoundException(String.format(Exceptions.NO_SAVED_TICKER_FOUND_F, ticker)));
+        Long userId = userOptional.orElseThrow(
+                () -> new NotFoundException(String.format(Exceptions.USER_NOT_FOUND_F, username))
+        ).getId();
+
+        Optional<StockResponseData> existedTicker = stockResponseDataRepository.findByTicker(ticker);
+        StockResponseData stockResponseData = existedTicker.orElseThrow(() ->
+                new NotFoundException(String.format(Exceptions.NO_SAVED_TICKER_FOUND_F, ticker))
+        );
 
         List<Result> resultsByUserAndTicker = resultRepository.findResultsByUserAndTicker(userId, ticker);
 
@@ -60,5 +59,9 @@ public class StockService {
                 .ticker(stockResponseData.getTicker())
                 .results(resultsByUserAndTicker)
                 .build();
+    }
+
+    public Optional<StockResponseData> getTickerInDatabase(String ticker) {
+        return stockResponseDataRepository.findByTicker(ticker);
     }
 }

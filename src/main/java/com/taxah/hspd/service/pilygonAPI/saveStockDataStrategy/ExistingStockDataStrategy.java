@@ -12,6 +12,7 @@ import org.springframework.stereotype.Component;
 import java.time.LocalDate;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -20,6 +21,11 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class ExistingStockDataStrategy implements SaveStockDataStrategy {
     private final ResultRepository resultRepository;
+
+    @Override
+    public boolean supports(Optional<StockResponseData> stockResponseData, boolean statusInPolygon) {
+        return stockResponseData.isPresent();
+    }
 
     @Override
     public StockResponseData apply(List<Result> apiResults, User user, StockResponseData data, LocalDate startDate, LocalDate endDate) {
@@ -31,13 +37,15 @@ public class ExistingStockDataStrategy implements SaveStockDataStrategy {
         apiResults = subtractLists(apiResults, existedInDatabaseResults);
 
         if (!apiResults.isEmpty()) {
-            apiResults.forEach(result -> result.addUser(user));
+            apiResults.forEach(result -> result.addUser(user));  // Добавляем пользователя к каждому результату
             resultRepository.saveAll(apiResults);
+        }
+
+        if (!apiResults.isEmpty() || userAdded) {
             return data;
-        } else if (userAdded) {
-            return data;
-        } else
-            throw new AlreadyExistsException(String.format(Exceptions.DATA_ALREADY_EXISTS_F, data.getTicker(), startDate, endDate));
+        }
+
+        throw new AlreadyExistsException(String.format(Exceptions.DATA_ALREADY_EXISTS_F, data.getTicker(), startDate, endDate));
     }
 
     private boolean addUserToExistedResults(User user, List<Result> results) {

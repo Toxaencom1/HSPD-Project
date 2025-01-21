@@ -12,9 +12,9 @@ import lombok.*;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashSet;
 import java.util.Objects;
+import java.util.Set;
 
 @Getter
 @Setter
@@ -39,18 +39,22 @@ public class Result {
 
     @JsonProperty("o")
     @Schema(name = "open", description = "Цена открытия", example = "134.83")
+    @Column(precision = 38, scale = 3)
     private BigDecimal open;
 
     @JsonProperty("c")
     @Schema(name = "close", description = "Цена закрытия", example = "134.83")
+    @Column(precision = 38, scale = 3)
     private BigDecimal close;
 
     @JsonProperty("h")
     @Schema(name = "high", description = "Максимальная цена", example = "134.83")
+    @Column(precision = 38, scale = 3)
     private BigDecimal high;
 
     @JsonProperty("l")
     @Schema(name = "low", description = "Минимальная цена", example = "134.83")
+    @Column(precision = 38, scale = 3)
     private BigDecimal low;
 
     @ManyToOne
@@ -63,7 +67,7 @@ public class Result {
             joinColumns = @JoinColumn(name = "result_id"),
             inverseJoinColumns = @JoinColumn(name = "user_id"))
     @JsonIgnore
-    private List<User> users = new ArrayList<>();
+    private Set<User> users = new HashSet<>();
 
     public void addUser(User user) {
         if (user != null && user.getId() != null) {
