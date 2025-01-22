@@ -45,7 +45,7 @@ public class ExistingStockDataStrategy implements SaveStockDataStrategy {
             return data;
         }
 
-        throw new AlreadyExistsException(String.format(Exceptions.DATA_ALREADY_EXISTS_F, data.getTicker(), startDate, endDate));
+        throw new AlreadyExistsException(String.format(Exceptions.DATA_ALREADY_EXISTS_F, data.getTicker()));
     }
 
     private boolean addUserToExistedResults(User user, List<Result> results) {

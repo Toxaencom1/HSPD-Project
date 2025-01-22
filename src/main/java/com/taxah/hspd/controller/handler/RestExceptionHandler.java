@@ -1,5 +1,6 @@
 package com.taxah.hspd.controller.handler;
 
+import com.fasterxml.jackson.databind.exc.InvalidFormatException;
 import com.taxah.hspd.entity.log.ErrorEntity;
 import com.taxah.hspd.exception.AlreadyExistsException;
 import com.taxah.hspd.exception.NotFoundException;
@@ -8,8 +9,8 @@ import com.taxah.hspd.exception.dto.StringErrorDTO;
 import com.taxah.hspd.exception.dto.ValidationErrorDTO;
 import com.taxah.hspd.repository.log.ErrorEntityRepository;
 import lombok.RequiredArgsConstructor;
-import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.springframework.context.support.DefaultMessageSourceResolvable;
+import org.springframework.core.annotation.Order;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.BadCredentialsException;
@@ -20,13 +21,16 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 
 import java.util.UUID;
 
+
+import static com.taxah.hspd.util.constant.Exceptions.*;
+
+
+@Order(10)
 @ControllerAdvice
 @RequiredArgsConstructor
 public class RestExceptionHandler implements UserAccessHandler {
-
     public static final String EXTRA_PREFIX = "extra: ";
-    public static final String MESSAGE_PREFIX = "message: ";
-    public static final String TRACE_PREFIX = "\n\ttrace: ";
+
     private final ErrorEntityRepository errorRepository;
 
     @ExceptionHandler(AlreadyExistsException.class)
@@ -61,20 +65,17 @@ public class RestExceptionHandler implements UserAccessHandler {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorDTO);
     }
 
+    @ExceptionHandler(InvalidFormatException.class)
+    public ResponseEntity<StringErrorDTO> handleInvalidFormatException(InvalidFormatException e) {
+        if (e.getTargetType().equals(java.time.LocalDate.class)) {
+            return stringResponseEntity(e, HttpStatus.BAD_REQUEST, INVALID_DATE_FORMAT, false);
+        }
+        return stringResponseEntity(e, HttpStatus.BAD_REQUEST, INVALID_INPUT_FORMAT + e.getValue());
+    }
+
     @ExceptionHandler(AuthorizationDeniedException.class)
     public ResponseEntity<StringErrorDTO> handleAccessDenied(AuthorizationDeniedException e) {
         return stringResponseEntity(e, HttpStatus.FORBIDDEN, null);
-    }
-
-    @ExceptionHandler(Exception.class)
-    public ResponseEntity<StringErrorDTO> handleGlobalException(Exception e) {
-        String extra = TRACE_PREFIX + ExceptionUtils.getStackTrace(e);
-        return stringResponseEntity(e, HttpStatus.INTERNAL_SERVER_ERROR, extra, true);
-    }
-
-    @ExceptionHandler(NullPointerException.class)
-    public ResponseEntity<StringErrorDTO> handleNullPointerException(NullPointerException e) {
-        return stringResponseEntity(e, HttpStatus.INTERNAL_SERVER_ERROR, null);
     }
 
     private ResponseEntity<StringErrorDTO> stringResponseEntity(Exception e, HttpStatus status, String extra) {
@@ -96,8 +97,8 @@ public class RestExceptionHandler implements UserAccessHandler {
         return toDatabaseLog
                 ? stringResponseEntity(e, status, extra)
                 : ResponseEntity.status(status).body(StringErrorDTO.builder()
-                    .errorUUID(UUID.randomUUID())
-                    .errorMessage(extra != null ? extra : e.getMessage())
-                    .build());
+                .errorUUID(UUID.randomUUID())
+                .errorMessage(extra != null ? extra : e.getMessage())
+                .build());
     }
 }
