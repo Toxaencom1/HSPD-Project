@@ -49,16 +49,16 @@ public class ExistingStockDataStrategy implements SaveStockDataStrategy {
     }
 
     private boolean addUserToExistedResults(User user, List<Result> results) {
-        // Stream api не подходит из-за необходимости работать с эффективно финальной переменной
-        boolean flag = false;
-        for (Result result : results) {
-            if (!result.getUsers().contains(user)) {
-                result.getUsers().add(user);
-                flag = true;
-            }
+        List<Result> resultsToUpdate = results.stream()
+                .filter(result -> !result.getUsers().contains(user))
+                .peek(result -> result.getUsers().add(user))
+                .collect(Collectors.toList());
+
+        if (!resultsToUpdate.isEmpty()) {
+            resultRepository.saveAll(resultsToUpdate);
+            return true;
         }
-        resultRepository.saveAllAndFlush(results);
-        return flag;
+        return false;
     }
 
     private List<Result> subtractLists(List<Result> mainList, List<Result> subtractiveList) {
