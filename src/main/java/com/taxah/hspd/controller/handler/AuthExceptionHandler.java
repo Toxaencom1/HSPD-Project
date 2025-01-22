@@ -19,8 +19,9 @@ import java.io.IOException;
 @Component
 @RequiredArgsConstructor
 public class AuthExceptionHandler implements AuthenticationEntryPoint {
-    private final ErrorEntityRepository errorEntityRepository;
+    public static final String ANONYMOUS_USERNAME = "anonymousUser";
     public static final String USER_IS_NOT_AUTHENTICATED = "User is not authenticated. Please log in.";
+    private final ErrorEntityRepository errorEntityRepository;
 
     @Override
     public void commence(HttpServletRequest request, HttpServletResponse response, AuthenticationException authException)
@@ -28,7 +29,7 @@ public class AuthExceptionHandler implements AuthenticationEntryPoint {
         response.setContentType(MediaType.APPLICATION_JSON_VALUE);
         response.setStatus(HttpStatus.FORBIDDEN.value());
         ErrorEntity error = errorEntityRepository.save(ErrorEntity.builder()
-                .username("anonymousUser")
+                .username(ANONYMOUS_USERNAME)
                 .message(USER_IS_NOT_AUTHENTICATED)
                 .build());
         StringErrorDTO stringErrorDTO = StringErrorDTO.builder()

@@ -21,10 +21,12 @@ public class JwtService {
     public static final String EMAIL = "email";
     public static final String ROLE = "role";
     public static final String AUTHORITIES = "authorities";
-    public static final int TOKEN_LIFE_DURATION = 1000 * 60 * 60 * 24;
 
     @Value("${token.signing.key}")
     private String jwtSigningKey;
+
+    @Value("${token.life.duration}")
+    private int tokenLifeDuration;
 
     public String extractUserName(String token) {
         return extractClaim(token, Claims::getSubject);
@@ -56,7 +58,7 @@ public class JwtService {
                 .claims(extraClaims)
                 .subject(userDetails.getUsername())
                 .issuedAt(new Date(System.currentTimeMillis()))
-                .expiration(new Date(System.currentTimeMillis() + TOKEN_LIFE_DURATION)) // 24 часа
+                .expiration(new Date(System.currentTimeMillis() + tokenLifeDuration)) // 24 часа
                 .signWith(getSigningKey())
                 .compact();
     }

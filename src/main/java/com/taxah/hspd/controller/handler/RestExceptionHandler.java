@@ -25,6 +25,9 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class RestExceptionHandler implements UserAccessHandler {
 
+    public static final String EXTRA_PREFIX = "extra: ";
+    public static final String MESSAGE_PREFIX = "message: ";
+    public static final String TRACE_PREFIX = "\n\ttrace: ";
     private final ErrorEntityRepository errorRepository;
 
     @ExceptionHandler(AlreadyExistsException.class)
@@ -66,7 +69,7 @@ public class RestExceptionHandler implements UserAccessHandler {
 
     @ExceptionHandler(Exception.class)
     public ResponseEntity<StringErrorDTO> handleGlobalException(Exception e) {
-        String extra = "\n\ttrace: " + ExceptionUtils.getStackTrace(e);
+        String extra = TRACE_PREFIX + ExceptionUtils.getStackTrace(e);
         return stringResponseEntity(e, HttpStatus.INTERNAL_SERVER_ERROR, extra, true);
     }
 
@@ -77,10 +80,11 @@ public class RestExceptionHandler implements UserAccessHandler {
 
     private ResponseEntity<StringErrorDTO> stringResponseEntity(Exception e, HttpStatus status, String extra) {
         String username = getAuthenticationUsername();
+        String extraString = extra != null ? EXTRA_PREFIX + extra + "\n" : "";
         ErrorEntity error = errorRepository.save(ErrorEntity.builder()
                 .username(username)
                 .message(
-                        (extra != null ? "extra: " + extra + "\n" : "") + "message: " + e.getMessage()
+                        extraString + MESSAGE_PREFIX + e.getMessage()
                 )
                 .build());
         return ResponseEntity.status(status).body(StringErrorDTO.builder()

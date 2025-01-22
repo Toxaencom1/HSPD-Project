@@ -15,6 +15,8 @@ import org.springframework.security.core.userdetails.UserDetails;
 import java.util.*;
 import java.util.stream.Collectors;
 
+import static com.taxah.hspd.util.constant.Exceptions.ROLE_ALREADY_EXISTS;
+
 @Entity
 @Table(name = "users")
 @Getter
@@ -99,7 +101,7 @@ public class User implements UserDetails {
 
     public void addRole(Role role) {
         if (roles.contains(role)) {
-            throw new AlreadyExistsException("Role already exists");
+            throw new AlreadyExistsException(ROLE_ALREADY_EXISTS);
         }
         roles.add(role);
     }

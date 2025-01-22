@@ -8,6 +8,7 @@ public class Exceptions {
     public static final String USER_NOT_FOUND = "User not found";
     public static final String USER_NOT_FOUND_F = "User '%s' not found";
     public static final String ROLE_NOT_FOUND_F = "Role %s not found";
+    public static final String ROLE_ALREADY_EXISTS = "Role already exists";
     public static final String EMAIL_ALREADY_EXISTS = "Email already exists";
     public static final String USERNAME_ALREADY_EXISTS = "Username already exists";
     public static final String DATA_ALREADY_EXISTS_F = "Data already exists for %s or empty results for period %s and %s";

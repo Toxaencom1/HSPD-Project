@@ -39,6 +39,7 @@ logging:
 token:
   signing:
     key: ${SIGNING_KEY}
+  life.duration: 86400000 # 1000 * 60 * 60 * 24
 
 polygonAPI:
   url:
