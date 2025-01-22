@@ -27,11 +27,11 @@ public class PolygonFacade {
     public void saveStock(String username, GetStockResponseDataDTO dataDTO) {
         String ticker = dataDTO.getTicker();
         User existedUser = userService.findByUsername(username);
-        List<Result> results = polygonService.getNewApiResults(dataDTO);
         Optional<StockResponseData> alreadyExist = stockService.getTickerInDatabase(ticker);
         boolean statusInPolygon = alreadyExist
                 .map(value -> true)
                 .orElseGet(() -> polygonService.checkTickerInPolygon(ticker));
+        List<Result> results = polygonService.getNewApiResults(dataDTO);
 
         SaveStockDataStrategy chosenStrategy = strategyResolver.resolve(ticker, alreadyExist, statusInPolygon);
 
