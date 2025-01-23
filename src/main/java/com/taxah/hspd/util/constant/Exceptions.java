@@ -24,4 +24,5 @@ public class Exceptions {
     public static final String CHECK_YOUR_API_PLAN = "Your plan doesn't include this data timeframe. Please upgrade your plan at https://polygon.io/pricing";
     public static final String INVALID_DATE_FORMAT = "Invalid date format. Expected format is '" + LOCAL_DATE_FORMAT + "'. Please check your input.";
     public static final String INVALID_INPUT_FORMAT = "Invalid input format: ";
+    public static final String INVALID_LOCAL_DATE_TOKEN_DESERIALIZATION = "Invalid token for LocalDate deserialization";
 }

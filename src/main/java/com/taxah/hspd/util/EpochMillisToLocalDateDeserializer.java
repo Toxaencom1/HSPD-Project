@@ -10,7 +10,7 @@ import java.time.Instant;
 import java.time.LocalDate;
 import java.time.ZoneId;
 
-import static com.taxah.hspd.util.constant.Constants.INVALID_LOCAL_DATE_TOKEN_DESERIALIZATION;
+import static com.taxah.hspd.util.constant.Exceptions.INVALID_LOCAL_DATE_TOKEN_DESERIALIZATION;
 
 public class EpochMillisToLocalDateDeserializer extends JsonDeserializer<LocalDate> {
 

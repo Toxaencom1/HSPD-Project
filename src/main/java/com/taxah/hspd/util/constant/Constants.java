@@ -7,8 +7,7 @@ import org.springframework.stereotype.Component;
 @Component
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class Constants {
-    public static final String APP_NAME = "hspd";
-    public static final String INVALID_LOCAL_DATE_TOKEN_DESERIALIZATION = "Invalid token for LocalDate deserialization";
+    public static final String APP_NAME = "Historical Stock Prices Data API";
     public static final String INFO = """
                 Информация для тестирования приложения,
                 ниже описаны скрипты для наполнения базы данных приложения
