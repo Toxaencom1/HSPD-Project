@@ -15,12 +15,14 @@ public class UserService implements UserDetailsService {
 
     private final UserRepository userRepository;
 
+//    @Cacheable(value = "users", key = "#username")
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         return userRepository.findByUsernameIgnoreCase(username)
                 .orElseThrow(() -> new UsernameNotFoundException(String.format(Exceptions.USER_NOT_FOUND_F, username)));
     }
 
+//    @Cacheable(value = "users", key = "#username")
     public User findByUsername(String username) {
         return userRepository.findByUsernameIgnoreCase(username)
                 .orElseThrow(() -> new UsernameNotFoundException(String.format(Exceptions.USER_NOT_FOUND_F, username)));

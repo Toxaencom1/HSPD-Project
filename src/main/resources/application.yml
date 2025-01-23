@@ -28,6 +28,17 @@ spring:
         batch_fetch_style: dynamic
         default_batch_fetch_size: 450
         generate_statistics: false # batch check
+  cache:
+    type: redis
+    redis:
+      time-to-live: ${common.ttl:86400000}ms
+  data:
+    redis:
+      host: localhost
+      port: 6379
+
+common:
+  ttl: 86400000 # 1000 * 60 * 60 * 24
 
 logging:
   level:
@@ -39,7 +50,7 @@ logging:
 token:
   signing:
     key: ${SIGNING_KEY}
-  life.duration: 86400000 # 1000 * 60 * 60 * 24
+  life.duration: ${common.ttl}
 
 polygonAPI:
   url:

@@ -10,6 +10,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.io.Serializable;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.HashSet;
@@ -26,7 +27,7 @@ import java.util.Set;
         @UniqueConstraint(columnNames = {"date", "stock_response_data_id"})
 })
 @Schema(description = "Сущность результата")
-public class Result {
+public class Result implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @JsonIgnore

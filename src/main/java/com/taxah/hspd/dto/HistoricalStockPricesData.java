@@ -6,12 +6,13 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Builder;
 import lombok.Data;
 
+import java.io.Serializable;
 import java.util.List;
 
 @Data
 @Builder
 @Schema(description = "DTO для возврата данных об акциях.")
-public class HistoricalStockPricesData {
+public class HistoricalStockPricesData implements Serializable {
     @Schema(description = "Уникальный идентификатор акции.", example = "AAPL")
     private String ticker;
     @Schema(description = "Список результатов.", example = """

@@ -6,6 +6,7 @@ import lombok.*;
 import org.hibernate.annotations.BatchSize;
 import org.hibernate.proxy.HibernateProxy;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -19,7 +20,7 @@ import java.util.Objects;
 @NoArgsConstructor
 @Entity
 @Table(name = "stock_response_data")
-public class StockResponseData {
+public class StockResponseData implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;

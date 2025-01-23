@@ -4,11 +4,12 @@ services:
   hspd:
     depends_on:
       - db
+      - redis
     container_name: hspd-app
     build:
       context: .
       dockerfile: Dockerfile
-    entrypoint: ["/wait-for-it.sh", "db:${DB_PORT:-5432}", "--", "java", "-jar", "app.jar"]
+    entrypoint: [ "/wait-for-it.sh", "db:${DB_PORT:-5432}", "--", "java", "-jar", "app.jar" ]
     ports:
       - "${APP_PORT:-8080}:8080"
     environment:
@@ -23,7 +24,7 @@ services:
       - 8.8.4.4
     networks:
       - app-network
-    restart: unless-stopped
+#    restart: unless-stopped
 
   db:
     container_name: postgreSQL_FOR_DOCKER_HSPD
@@ -38,6 +39,20 @@ services:
     volumes:
       - ./Data:/var/lib/postgresql/data
     command: -p ${DB_PORT:-5432}
+    networks:
+      - app-network
+    restart: unless-stopped
+
+  redis:
+    depends_on:
+      - db
+    image: redis:7.0.11-alpine
+    container_name: redis_container_HSPD
+    ports:
+      - "${RD_PORT:-6379}:6379"
+    volumes:
+      - /data:/redis_data
+    command: [ "redis-server", "--appendonly", "yes" ]
     networks:
       - app-network
     restart: unless-stopped

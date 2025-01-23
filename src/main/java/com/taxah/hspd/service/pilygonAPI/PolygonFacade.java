@@ -10,7 +10,9 @@ import com.taxah.hspd.service.auth.impl.UserService;
 import com.taxah.hspd.service.pilygonAPI.saveStockDataStrategy.SaveStockDataStrategy;
 import com.taxah.hspd.service.pilygonAPI.saveStockDataStrategy.SaveStockStrategyResolver;
 import com.taxah.hspd.util.constant.Exceptions;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -43,6 +45,8 @@ public class PolygonFacade {
         );
     }
 
+    @Transactional
+    @Cacheable(value = "hspd", key ="#username + '_' + #ticker" )
     public HistoricalStockPricesData getSavedInfo(String username, String ticker) {
         Optional<StockResponseData> supported = stockService.getTickerInDatabase(ticker);
         return supported.map(value -> stockService.getSavedInfo(username, ticker))

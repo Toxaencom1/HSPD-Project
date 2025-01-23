@@ -14,6 +14,7 @@ import com.taxah.hspd.util.constant.Exceptions;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -23,21 +24,22 @@ import java.util.Optional;
 @Service
 @RequiredArgsConstructor
 public class StockService {
+    public static final String APPLYING_STRATEGY = "Applying strategy: {}";
     private final StockResponseDataRepository stockResponseDataRepository;
     private final UserRepository userRepository;
     private final ResultRepository resultRepository;
 
     @Transactional
+    @CacheEvict(value = "hspd", key ="#user.username + '_' + #dataDTO.ticker")
     public StockResponseData saveStockDataByStrategy(SaveStockDataStrategy strategy,
                                                      List<Result> mutableApiResults,
                                                      User user,
                                                      StockResponseData stockResponseData,
                                                      GetStockResponseDataDTO dataDTO
     ) {
-        log.info("Applying strategy: " + strategy.getClass().getSimpleName());
+        log.info(APPLYING_STRATEGY, strategy.getClass().getSimpleName());
         return strategy.apply(mutableApiResults, user, stockResponseData, dataDTO.getStart(), dataDTO.getEnd());
     }
-
 
     public HistoricalStockPricesData getSavedInfo(String username, String ticker) {
         Optional<User> userOptional = userRepository.findByUsernameIgnoreCase(username);
