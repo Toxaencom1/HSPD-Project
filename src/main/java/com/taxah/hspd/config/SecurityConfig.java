@@ -3,7 +3,6 @@ package com.taxah.hspd.config;
 import com.taxah.hspd.controller.filter.JwtAuthenticationFilter;
 import com.taxah.hspd.controller.handler.AuthExceptionHandler;
 import com.taxah.hspd.service.auth.impl.UserService;
-import com.taxah.hspd.util.constant.Endpoints;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
@@ -20,6 +19,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
+import static com.taxah.hspd.util.constant.Endpoints.*;
 import static org.springframework.security.config.http.SessionCreationPolicy.STATELESS;
 
 @Configuration
@@ -36,15 +36,16 @@ public class SecurityConfig {
     SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         return http.csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests((requests) -> requests
-                        .requestMatchers(Endpoints.TEST_INFO_PATH).permitAll()
-                        .requestMatchers(Endpoints.API_USER_REGISTER, Endpoints.API_USER_LOGIN).permitAll()
-                        .requestMatchers(Endpoints.SW_UI, Endpoints.SW_RESOURCES, Endpoints.SW_API_DOCS).permitAll()
+                        .requestMatchers(TEST_INFO_PATH).permitAll()
+                        .requestMatchers(API_USER_REGISTER, API_USER_LOGIN, API_USER_REFRESH).permitAll()
+                        .requestMatchers(SW_UI, SW_RESOURCES, SW_API_DOCS).permitAll()
                         .anyRequest().authenticated())
                 .sessionManagement(manager -> manager.sessionCreationPolicy(STATELESS))
                 .authenticationProvider(authenticationProvider())
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
                 .exceptionHandling(ex -> ex
-                        .authenticationEntryPoint(authExceptionHandler))
+                        .authenticationEntryPoint(authExceptionHandler)
+                )
                 .build();
     }
 

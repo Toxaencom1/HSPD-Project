@@ -2,9 +2,7 @@ package com.taxah.hspd.controller.handler;
 
 import com.fasterxml.jackson.databind.exc.InvalidFormatException;
 import com.taxah.hspd.entity.log.ErrorEntity;
-import com.taxah.hspd.exception.AlreadyExistsException;
-import com.taxah.hspd.exception.NotFoundException;
-import com.taxah.hspd.exception.UnsupportedException;
+import com.taxah.hspd.exception.*;
 import com.taxah.hspd.exception.dto.StringErrorDTO;
 import com.taxah.hspd.exception.dto.ValidationErrorDTO;
 import com.taxah.hspd.repository.log.ErrorEntityRepository;
@@ -30,6 +28,7 @@ import static com.taxah.hspd.util.constant.Exceptions.*;
 @RequiredArgsConstructor
 public class RestExceptionHandler implements UserAccessHandler {
     public static final String EXTRA_PREFIX = "extra: ";
+    public static final String REFRESH_PREFIX = "Will be deleted Refresh";
 
     private final ErrorEntityRepository errorRepository;
 
@@ -78,6 +77,11 @@ public class RestExceptionHandler implements UserAccessHandler {
         return stringResponseEntity(e, HttpStatus.FORBIDDEN, null);
     }
 
+    @ExceptionHandler(JwtRefreshExpiredException.class)
+    public ResponseEntity<StringErrorDTO> handleJwtRefreshExpiredException(JwtRefreshExpiredException e) {
+        return stringResponseEntity(e, HttpStatus.FORBIDDEN, REFRESH_PREFIX, false);
+    }
+
     private ResponseEntity<StringErrorDTO> stringResponseEntity(Exception e, HttpStatus status, String extra) {
         String username = getAuthenticationUsername();
         String extraString = extra != null ? EXTRA_PREFIX + extra + "\n" : "";
@@ -98,7 +102,7 @@ public class RestExceptionHandler implements UserAccessHandler {
                 ? stringResponseEntity(e, status, extra)
                 : ResponseEntity.status(status).body(StringErrorDTO.builder()
                 .errorUUID(UUID.randomUUID())
-                .errorMessage(extra != null ? extra : e.getMessage())
+                .errorMessage(extra != null ? extra + " " + e.getMessage() : e.getMessage())
                 .build());
     }
 }

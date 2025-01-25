@@ -17,3 +17,19 @@ databaseChangeLog:
         - sqlFile:
             path: classpath:/db/changelog/sql/03-added-error-table.sql
             encoding: UTF-8
+
+  - changeSet:
+      id: 3
+      author: Toxaencom1
+      changes:
+        - sqlFile:
+            path: classpath:/db/changelog/sql/04-added-refresh-tokens.sql
+            encoding: UTF-8
+
+  - changeSet:
+      id: 4
+      author: Toxaencom1
+      changes:
+        - sqlFile:
+            path: classpath:/db/changelog/sql/05-fill-standard-roles-permissions.sql
+            encoding: UTF-8

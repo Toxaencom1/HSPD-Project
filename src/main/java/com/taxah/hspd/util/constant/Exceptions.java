@@ -10,6 +10,7 @@ public class Exceptions {
     public static final String USER_NOT_FOUND = "User not found";
     public static final String USER_NOT_FOUND_F = "User '%s' not found";
     public static final String ROLE_NOT_FOUND_F = "Role %s not found";
+    public static final String REFRESH_TOKEN_NOT_FOUND = "Refresh token Not Found. Please login.";
     public static final String ROLE_ALREADY_EXISTS = "Role already exists";
     public static final String EMAIL_ALREADY_EXISTS = "Email already exists";
     public static final String USERNAME_ALREADY_EXISTS = "Username already exists";
@@ -25,4 +26,6 @@ public class Exceptions {
     public static final String INVALID_DATE_FORMAT = "Invalid date format. Expected format is '" + LOCAL_DATE_FORMAT + "'. Please check your input.";
     public static final String INVALID_INPUT_FORMAT = "Invalid input format: ";
     public static final String INVALID_LOCAL_DATE_TOKEN_DESERIALIZATION = "Invalid token for LocalDate deserialization";
+    public static final String INVALID_REFRESH_TOKEN = "Invalid refresh token";
+    public static final String INVALID_ACCESS_TOKEN = "Access token is inspired. Refresh or login.";
 }

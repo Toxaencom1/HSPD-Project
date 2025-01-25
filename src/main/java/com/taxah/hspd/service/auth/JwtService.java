@@ -1,10 +1,14 @@
 package com.taxah.hspd.service.auth;
 
 import com.taxah.hspd.entity.auth.User;
+import com.taxah.hspd.enums.TokenType;
+import com.taxah.hspd.exception.JwtRefreshExpiredException;
 import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
@@ -16,17 +20,21 @@ import java.util.Map;
 import java.util.function.Function;
 
 @Service
+@RequiredArgsConstructor
 public class JwtService {
     public static final String ID = "id";
     public static final String EMAIL = "email";
     public static final String ROLE = "role";
     public static final String AUTHORITIES = "authorities";
+    public static final String TYPE = "type";
 
     @Value("${token.signing.key}")
     private String jwtSigningKey;
-
-    @Value("${token.life.duration}")
-    private int tokenLifeDuration;
+    @Value("${token.ttl.access}")
+    private int accessTokenTTL;
+    @Value("${token.ttl.refresh}")
+    private int refreshTokenTTL;
+    private final RefreshTokenService refreshTokenService;
 
     public String extractUserName(String token) {
         return extractClaim(token, Claims::getSubject);
@@ -36,11 +44,22 @@ public class JwtService {
         Map<String, Object> claims = new HashMap<>();
         if (userDetails instanceof User customUserDetails) {
             claims.put(ID, customUserDetails.getId());
+            claims.put(TYPE, TokenType.ACCESS.name());
             claims.put(EMAIL, customUserDetails.getEmail());
             claims.put(ROLE, customUserDetails.getRoles());
             claims.put(AUTHORITIES, customUserDetails.getAuthorities());
         }
         return generateToken(claims, userDetails);
+    }
+
+    public String generateRefreshToken(UserDetails userDetails) {
+        return Jwts.builder()
+                .subject(userDetails.getUsername())
+                .claim(TYPE, TokenType.REFRESH.name())
+                .issuedAt(new Date(System.currentTimeMillis()))
+                .expiration(new Date(System.currentTimeMillis() + refreshTokenTTL))
+                .signWith(getSigningKey())
+                .compact();
     }
 
     public boolean isTokenValid(String token, UserDetails userDetails) {
@@ -58,7 +77,7 @@ public class JwtService {
                 .claims(extraClaims)
                 .subject(userDetails.getUsername())
                 .issuedAt(new Date(System.currentTimeMillis()))
-                .expiration(new Date(System.currentTimeMillis() + tokenLifeDuration)) // 24 часа
+                .expiration(new Date(System.currentTimeMillis() + accessTokenTTL))
                 .signWith(getSigningKey())
                 .compact();
     }
@@ -72,11 +91,22 @@ public class JwtService {
     }
 
     private Claims extractAllClaims(String token) {
-        return Jwts.parser()
-                .verifyWith(getSigningKey())
-                .build()
-                .parseSignedClaims(token)
-                .getPayload();
+        try {
+            return Jwts.parser()
+                    .verifyWith(getSigningKey())
+                    .build()
+                    .parseSignedClaims(token)
+                    .getPayload();
+        } catch (ExpiredJwtException e) {
+            if (e.getClaims() != null
+                    && e.getClaims().get(TYPE, String.class) != null &&
+                    e.getClaims().get(TYPE, String.class)
+                            .equals(TokenType.REFRESH.name())) {
+                refreshTokenService.deleteByRefreshToken(token);
+                throw new JwtRefreshExpiredException(e.getMessage(), e);
+            }
+            return e.getClaims();
+        }
     }
 
     private SecretKey getSigningKey() {

@@ -27,4 +27,16 @@ public class UserService implements UserDetailsService {
         return userRepository.findByUsernameIgnoreCase(username)
                 .orElseThrow(() -> new UsernameNotFoundException(String.format(Exceptions.USER_NOT_FOUND_F, username)));
     }
+
+    public boolean existsByUsername(String username) {
+        return userRepository.existsByUsernameIgnoreCase(username);
+    }
+
+    public boolean existsByEmail(String email) {
+        return userRepository.existsByEmailIgnoreCase(email);
+    }
+
+    public User save(User user) {
+        return userRepository.save(user);
+    }
 }

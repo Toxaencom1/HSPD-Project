@@ -34,6 +34,12 @@ public interface StockControllerSwagger {
                                     schema = @Schema(implementation = StringErrorDTO.class))
                     ),
                     @ApiResponse(
+                            description = "Данные уже существуют в базе данных.",
+                            responseCode = "409",
+                            content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE,
+                                    schema = @Schema(implementation = StringErrorDTO.class))
+                    ),
+                    @ApiResponse(
                             description = "Произошла внутренняя ошибка сервера.",
                             responseCode = "500",
                             content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE,

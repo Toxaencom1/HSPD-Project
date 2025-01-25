@@ -12,8 +12,10 @@ public class Endpoints {
     public static final String FETCH = "/fetch";
     public static final String REGISTER = "/register";
     public static final String LOGIN = "/login";
+    public static final String REFRESH = "/refresh";
     public static final String API_USER_REGISTER = API_USER + REGISTER;
     public static final String API_USER_LOGIN = API_USER + LOGIN;
+    public static final String API_USER_REFRESH = API_USER + REFRESH;
     public static final String SW_UI = "/swagger-ui/**";
     public static final String SW_RESOURCES = "/swagger-resources/*";
     public static final String SW_API_DOCS = "/v3/api-docs/**";

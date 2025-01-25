@@ -31,14 +31,11 @@ spring:
   cache:
     type: redis
     redis:
-      time-to-live: ${common.ttl:86400000}ms
+      time-to-live: ${token.ttl.access:86400000}ms
   data:
     redis:
       host: localhost
       port: 6379
-
-common:
-  ttl: 86400000 # 1000 * 60 * 60 * 24
 
 logging:
   level:
@@ -50,7 +47,9 @@ logging:
 token:
   signing:
     key: ${SIGNING_KEY}
-  life.duration: ${common.ttl}
+  ttl:
+    access: 86400000 # 1000 * 60 * 60 * 24
+    refresh: 604800000 # 1000 * 60 * 60 * 24 * 7
 
 polygonAPI:
   url:
