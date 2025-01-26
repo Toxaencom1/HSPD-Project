@@ -12,10 +12,12 @@
 
 **DB_PORT** (порт для базы данных, который устанавливает как порт для хоста так и внутренний порт контейнера)
 
+**RD_PORT** (порт для контейнера c Redis Cache)
 ~~~ dotenv
 APP_PORT=8080
 DB_PORT=5432  
 API_KEY=  
+RD_PORT=
 SIGNING_KEY=  
 DB_USERNAME=  
 DB_PASSWORD=
