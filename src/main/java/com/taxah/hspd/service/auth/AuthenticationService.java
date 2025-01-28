@@ -13,6 +13,7 @@ import com.taxah.hspd.repository.auth.RoleRepository;
 import com.taxah.hspd.service.auth.impl.UserService;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.cache.annotation.CachePut;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.authorization.AuthorizationDeniedException;
@@ -81,7 +82,8 @@ public class AuthenticationService {
             throw new AlreadyExistsException(USERNAME_ALREADY_EXISTS);
     }
 
-    private JwtResponseDTO returnTokens(UserDetails user) {
+    @CachePut(value = "users", key = "#user.username")
+    public JwtResponseDTO returnTokens(UserDetails user) {
         var jwtAccess = jwtService.generateToken(user);
         var jwtRefresh = jwtService.generateRefreshToken(user);
         refreshTokenService.saveRefreshToken(RefreshToken.builder().refreshToken(jwtRefresh).build());

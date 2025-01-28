@@ -4,7 +4,7 @@ package com.taxah.hspd.entity.auth;
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
-import com.taxah.hspd.entity.polygonAPI.Result;
+import com.taxah.hspd.entity.UserResult;
 import com.taxah.hspd.exception.AlreadyExistsException;
 import jakarta.persistence.*;
 import lombok.*;
@@ -44,11 +44,13 @@ public class User implements UserDetails, Serializable {
     @ManyToMany(fetch = FetchType.EAGER, cascade = {CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH})
     private List<Role> roles;
 
-    @ManyToMany(mappedBy = "users")
+    @OneToMany(mappedBy = "user",
+            cascade = CascadeType.ALL,
+            orphanRemoval = true
+    )
     @JsonIgnore
     @ToString.Exclude
-    private Set<Result> results = new HashSet<>();
-
+    private Set<UserResult> results = new HashSet<>();
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {

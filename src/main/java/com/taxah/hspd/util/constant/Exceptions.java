@@ -28,4 +28,6 @@ public class Exceptions {
     public static final String INVALID_LOCAL_DATE_TOKEN_DESERIALIZATION = "Invalid token for LocalDate deserialization";
     public static final String INVALID_REFRESH_TOKEN = "Invalid refresh token";
     public static final String INVALID_ACCESS_TOKEN = "Access token is inspired. Refresh or login.";
+    public static final String SAVE_STOCK_FAILED = "Save stock failed";
+
 }

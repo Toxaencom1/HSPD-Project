@@ -1,11 +1,11 @@
 package com.taxah.hspd.service.pilygonAPI.saveStockDataStrategy;
 
-import com.taxah.hspd.entity.auth.User;
 import com.taxah.hspd.entity.polygonAPI.Result;
 import com.taxah.hspd.entity.polygonAPI.StockResponseData;
 import com.taxah.hspd.exception.AlreadyExistsException;
 import com.taxah.hspd.repository.polygonAPI.ResultRepository;
 import com.taxah.hspd.util.constant.Exceptions;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
@@ -27,38 +27,19 @@ public class ExistingStockDataStrategy implements SaveStockDataStrategy {
         return stockResponseData.isPresent();
     }
 
+    @Transactional
     @Override
-    public StockResponseData apply(List<Result> apiResults, User user, StockResponseData data, LocalDate startDate, LocalDate endDate) {
-        List<Result> existedInDatabaseResults = resultRepository.findByDateAndTicker(data.getTicker(), startDate, endDate);
-
-        boolean userAdded = addUserToExistedResults(user, existedInDatabaseResults);
-
+    public List<Result> apply(List<Result> apiResults, List<Result> existedInDatabaseResults, StockResponseData data, LocalDate startDate, LocalDate endDate) {
         apiResults.forEach(result -> result.setStockResponseData(data));
         apiResults = subtractLists(apiResults, existedInDatabaseResults);
 
         if (!apiResults.isEmpty()) {
-            apiResults.forEach(result -> result.addUser(user));  // Добавляем пользователя к каждому результату
-            resultRepository.saveAll(apiResults);
-        }
-
-        if (!apiResults.isEmpty() || userAdded) {
-            return data;
+            List<Result> results = resultRepository.concurrentSaveAll(apiResults);
+            existedInDatabaseResults.addAll(results);
+            return existedInDatabaseResults;
         }
 
         throw new AlreadyExistsException(String.format(Exceptions.DATA_ALREADY_EXISTS_F, data.getTicker()));
-    }
-
-    private boolean addUserToExistedResults(User user, List<Result> results) {
-        List<Result> resultsToUpdate = results.stream()
-                .filter(result -> !result.getUsers().contains(user))
-                .peek(result -> result.getUsers().add(user))
-                .collect(Collectors.toList());
-
-        if (!resultsToUpdate.isEmpty()) {
-            resultRepository.saveAll(resultsToUpdate);
-            return true;
-        }
-        return false;
     }
 
     private List<Result> subtractLists(List<Result> mainList, List<Result> subtractiveList) {

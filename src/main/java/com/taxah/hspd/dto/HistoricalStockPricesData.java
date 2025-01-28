@@ -1,5 +1,6 @@
 package com.taxah.hspd.dto;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.taxah.hspd.entity.polygonAPI.Result;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -12,6 +13,7 @@ import java.util.List;
 @Data
 @Builder
 @Schema(description = "DTO для возврата данных об акциях.")
+@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 public class HistoricalStockPricesData implements Serializable {
     @Schema(description = "Уникальный идентификатор акции.", example = "AAPL")
     private String ticker;

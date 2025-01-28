@@ -3,12 +3,14 @@ package com.taxah.hspd;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.taxah.hspd.dto.GetStockResponseDataDTO;
+import com.taxah.hspd.entity.UserResult;
 import com.taxah.hspd.entity.auth.Permission;
 import com.taxah.hspd.entity.auth.Role;
 import com.taxah.hspd.entity.auth.User;
 import com.taxah.hspd.entity.polygonAPI.Result;
 import com.taxah.hspd.entity.polygonAPI.StockResponseData;
 import com.taxah.hspd.enums.Roles;
+import com.taxah.hspd.repository.UserResultRepository;
 import com.taxah.hspd.repository.auth.UserRepository;
 import com.taxah.hspd.repository.polygonAPI.ResultRepository;
 import com.taxah.hspd.service.pilygonAPI.PolygonService;
@@ -28,6 +30,7 @@ import org.testcontainers.junit.jupiter.Testcontainers;
 import java.io.File;
 import java.time.LocalDate;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import static com.taxah.hspd.util.constant.Endpoints.*;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -50,6 +53,9 @@ class StockControllerTest {
 
     @Autowired
     ResultRepository resultRepository;
+
+    @Autowired
+    UserResultRepository userResultRepository;
 
     @Autowired
     MockMvc mockMvc;
@@ -95,7 +101,8 @@ class StockControllerTest {
                         .content(requestJson))
                 .andExpect(status().isCreated());
 
-        List<Result> results = resultRepository.findResultsByUserAndTicker(userId, dataDTO.getTicker());
+        List<Result> results = userResultRepository.findByUserIdAndResultStockResponseDataId(userId, data.getId())
+                .stream().map(UserResult::getResult).collect(Collectors.toList());
 
         assertNotNull(results);
         assertEquals(data.getResults().size(), results.size());
@@ -161,7 +168,8 @@ class StockControllerTest {
                 .andExpect(status().isOk());
 
 
-        List<Result> results = resultRepository.findResultsByUserAndTicker(userId, dataDTO.getTicker());
+        List<Result> results = userResultRepository.findByUserIdAndResultStockResponseDataId(userId, data.getId())
+                .stream().map(UserResult::getResult).collect(Collectors.toList());
 
         assertNotNull(results);
         assertEquals(data.getResults().size(), results.size());

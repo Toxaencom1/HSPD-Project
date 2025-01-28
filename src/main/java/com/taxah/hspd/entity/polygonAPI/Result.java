@@ -1,9 +1,10 @@
 package com.taxah.hspd.entity.polygonAPI;
 
-import com.fasterxml.jackson.annotation.JsonIdentityReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.taxah.hspd.entity.UserResult;
 import com.taxah.hspd.entity.auth.User;
 import com.taxah.hspd.util.EpochMillisToLocalDateDeserializer;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -27,6 +28,7 @@ import java.util.Set;
         @UniqueConstraint(columnNames = {"date", "stock_response_data_id"})
 })
 @Schema(description = "Сущность результата")
+@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 public class Result implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -62,19 +64,16 @@ public class Result implements Serializable {
     @JsonIgnore
     private StockResponseData stockResponseData;
 
-    @JsonIdentityReference(alwaysAsId = true)
-    @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE}, fetch = FetchType.LAZY)
-    @JoinTable(name = "users_results",
-            joinColumns = @JoinColumn(name = "result_id"),
-            inverseJoinColumns = @JoinColumn(name = "user_id"))
+    @OneToMany(mappedBy = "result",
+            cascade = CascadeType.ALL,
+            orphanRemoval = true
+    )
     @JsonIgnore
-    private Set<User> users = new HashSet<>();
+    @ToString.Exclude
+    private Set<UserResult> users = new HashSet<>();
 
-    public void addUser(User user) {
-        if (user != null && user.getId() != null) {
-            users.add(user);
-            user.getResults().add(this);
-        }
+    public boolean contains(User user){
+        return users.stream().map(UserResult::getUser).anyMatch(user::equals);
     }
 
     @Override

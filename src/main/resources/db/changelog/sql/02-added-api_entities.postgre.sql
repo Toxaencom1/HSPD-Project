@@ -25,7 +25,8 @@ CREATE TABLE "stock_response_data"
 CREATE TABLE "users_results"
 (
     "user_id"   BIGINT NOT NULL,
-    "result_id" BIGINT NOT NULL
+    "result_id" BIGINT NOT NULL,
+    PRIMARY KEY (user_id, result_id)
 );
 
 -- changeset Toxaencom1:1736510294885-18
