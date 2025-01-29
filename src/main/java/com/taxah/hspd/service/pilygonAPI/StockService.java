@@ -6,6 +6,7 @@ import com.taxah.hspd.entity.UserResult;
 import com.taxah.hspd.entity.auth.User;
 import com.taxah.hspd.entity.polygonAPI.Result;
 import com.taxah.hspd.entity.polygonAPI.StockResponseData;
+import com.taxah.hspd.exception.AlreadyExistsException;
 import com.taxah.hspd.exception.NotFoundException;
 import com.taxah.hspd.repository.UserResultRepository;
 import com.taxah.hspd.repository.polygonAPI.ResultRepository;
@@ -24,7 +25,6 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
-import static com.taxah.hspd.util.constant.Exceptions.SAVE_STOCK_FAILED;
 
 @Slf4j
 @Service
@@ -37,7 +37,7 @@ public class StockService {
     private final UserResultRepository userResultRepository;
 
     @Transactional
-    @CacheEvict(value = "hspd", key = "#username + '_' + #tickerName")
+    @CacheEvict(value = "hspd", key = "#username.toLowerCase() + '_' + #tickerName")
     public void saveStockData(SaveStockDataStrategy chosenStrategy,
                               List<Result> apiResults,
                               String username,
@@ -54,7 +54,7 @@ public class StockService {
                 dataDTO
         );
         if (!addUserToResults(existedUser, results)) {
-            throw new RuntimeException(SAVE_STOCK_FAILED);
+            throw new AlreadyExistsException(String.format(Exceptions.DATA_ALREADY_EXISTS_F, tickerName));
         }
     }
 
@@ -86,7 +86,7 @@ public class StockService {
 
 
     @Transactional
-    @Cacheable(value = "hspd", key = "#username + '_' + #ticker")
+    @Cacheable(value = "hspd", key = "#username.toLowerCase() + '_' + #ticker")
     public HistoricalStockPricesData getSavedInfo(String username, String ticker) {
         StockResponseData stockResponseData = stockResponseDataRepository.findByTicker(ticker).orElseThrow(() ->
                 new NotFoundException(String.format(Exceptions.NO_SAVED_TICKER_FOUND_F, ticker))

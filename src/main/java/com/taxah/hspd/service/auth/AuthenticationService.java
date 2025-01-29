@@ -82,7 +82,7 @@ public class AuthenticationService {
             throw new AlreadyExistsException(USERNAME_ALREADY_EXISTS);
     }
 
-    @CachePut(value = "users", key = "#user.username")
+    @CachePut(value = "users", key = "#user.username.toLowerCase()")
     public JwtResponseDTO returnTokens(UserDetails user) {
         var jwtAccess = jwtService.generateToken(user);
         var jwtRefresh = jwtService.generateRefreshToken(user);

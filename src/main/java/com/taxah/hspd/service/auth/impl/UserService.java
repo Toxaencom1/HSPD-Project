@@ -17,7 +17,7 @@ public class UserService implements UserDetailsService {
 
     private final UserRepository userRepository;
 
-    @Cacheable(value = "users", key = "#username")
+    @Cacheable(value = "users", key = "#username.toLowerCase()")
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         return userRepository.findByUsernameIgnoreCase(username)

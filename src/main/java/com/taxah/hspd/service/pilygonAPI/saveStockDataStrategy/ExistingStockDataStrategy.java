@@ -2,9 +2,7 @@ package com.taxah.hspd.service.pilygonAPI.saveStockDataStrategy;
 
 import com.taxah.hspd.entity.polygonAPI.Result;
 import com.taxah.hspd.entity.polygonAPI.StockResponseData;
-import com.taxah.hspd.exception.AlreadyExistsException;
 import com.taxah.hspd.repository.polygonAPI.ResultRepository;
-import com.taxah.hspd.util.constant.Exceptions;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
@@ -36,10 +34,9 @@ public class ExistingStockDataStrategy implements SaveStockDataStrategy {
         if (!apiResults.isEmpty()) {
             List<Result> results = resultRepository.concurrentSaveAll(apiResults);
             existedInDatabaseResults.addAll(results);
-            return existedInDatabaseResults;
         }
 
-        throw new AlreadyExistsException(String.format(Exceptions.DATA_ALREADY_EXISTS_F, data.getTicker()));
+        return existedInDatabaseResults;
     }
 
     private List<Result> subtractLists(List<Result> mainList, List<Result> subtractiveList) {
