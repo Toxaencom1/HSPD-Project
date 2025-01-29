@@ -35,32 +35,31 @@ public class CustomResultRepositoryImpl implements CustomResultRepository {
         List<Result> savedResults = new ArrayList<>();
         List<Result> conflictRows = new ArrayList<>();
 
-        for (int i = 0; i < results.size(); i++) {
-            Result result = results.get(i);
-
-            StringBuilder sqlBuilder = new StringBuilder();
-            sqlBuilder.append("INSERT INTO results (")
-                    .append(DATE).append(", ")
-                    .append(STOCK_RESPONSE_DATA_ID_UNDERSCORE).append(", ")
-                    .append(OPEN).append(", ")
-                    .append(CLOSE).append(", ")
-                    .append(HIGH).append(", ")
-                    .append(LOW).append(") ")
-                    .append("VALUES (:").append(DATE).append(", :")
-                    .append(STOCK_RESPONSE_DATA_ID).append(", :")
-                    .append(OPEN).append(", :")
-                    .append(CLOSE).append(", :")
-                    .append(HIGH).append(", :")
-                    .append(LOW).append(") ")
-                    .append("ON CONFLICT (").append(DATE).append(", ")
-                    .append(STOCK_RESPONSE_DATA_ID_UNDERSCORE).append(") DO NOTHING RETURNING id;");
-
-            String sql = sqlBuilder.toString();
-            /* StringBuilder description:
+        StringBuilder sqlBuilder = new StringBuilder();
+        sqlBuilder.append("INSERT INTO results (")
+                .append(DATE).append(", ")
+                .append(STOCK_RESPONSE_DATA_ID_UNDERSCORE).append(", ")
+                .append(OPEN).append(", ")
+                .append(CLOSE).append(", ")
+                .append(HIGH).append(", ")
+                .append(LOW).append(") ")
+                .append("VALUES (:").append(DATE).append(", :")
+                .append(STOCK_RESPONSE_DATA_ID).append(", :")
+                .append(OPEN).append(", :")
+                .append(CLOSE).append(", :")
+                .append(HIGH).append(", :")
+                .append(LOW).append(") ")
+                .append("ON CONFLICT (").append(DATE).append(", ")
+                .append(STOCK_RESPONSE_DATA_ID_UNDERSCORE).append(") DO NOTHING RETURNING id;");
+        /* StringBuilder description:
                     "INSERT INTO results (date, stock_response_data_id, open, close, high, low) " +
                    "VALUES (:date, :stockResponseDataId, :open, :close, :high, :low) " +
                     "ON CONFLICT (date, stock_response_data_id) DO NOTHING RETURNING id";
              */
+        String sql = sqlBuilder.toString();
+
+        for (int i = 0; i < results.size(); i++) {
+            Result result = results.get(i);
 
             Long generatedId = (Long) entityManager.createNativeQuery(sql)
                     .setParameter(DATE, result.getDate())
