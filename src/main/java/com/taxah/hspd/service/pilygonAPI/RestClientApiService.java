@@ -7,7 +7,6 @@ import com.taxah.hspd.entity.polygonAPI.StockResponseData;
 import com.taxah.hspd.exception.NotFoundException;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Primary;
 import org.springframework.http.HttpStatus;
@@ -20,7 +19,7 @@ import org.springframework.web.util.UriComponentsBuilder;
 
 import java.net.URI;
 import java.util.List;
-import java.util.Objects;
+import java.util.function.Supplier;
 
 import static com.taxah.hspd.util.constant.Exceptions.*;
 import static com.taxah.hspd.util.constant.Params.*;
@@ -29,7 +28,6 @@ import static com.taxah.hspd.util.constant.Params.*;
 @Data
 @Service
 @RequiredArgsConstructor
-@Slf4j
 public class RestClientApiService implements ApiService {
     private final RestClient restClient;
 
@@ -48,22 +46,20 @@ public class RestClientApiService implements ApiService {
                 .queryParam(SORT, SORT_TYPE)
                 .queryParam(API_KEY, apiKey)
                 .toUriString();
-        log.info(uriString);
-        List<Result> apiResults;
-        try {
-            apiResults = Objects.requireNonNull(restClient.get()
-                    .uri(uriString)
-                    .accept(MediaType.APPLICATION_JSON)
-                    .retrieve()
-                    .body(StockResponseData.class), POLYGON_IS_UNREACHABLE).getResults();
-        } catch (RestClientResponseException e) {
-            if (e.getStatusCode() == HttpStatus.NOT_FOUND) {
-                throw new NotFoundException(String.format(NO_API_RESULTS_FOUND_F, dataDTO.getTicker(), dataDTO.getStart(), dataDTO.getEnd()));
-            } else if (e.getStatusCode() == HttpStatus.FORBIDDEN) {
-                throw new AuthorizationDeniedException(CHECK_YOUR_API_PLAN);
-            }
-            throw e;
+        StockResponseData response = executeRequest(() -> restClient.get()
+                        .uri(uriString)
+                        .accept(MediaType.APPLICATION_JSON)
+                        .retrieve()
+                        .body(StockResponseData.class),
+                String.format(NO_API_RESULTS_FOUND_F, dataDTO.getTicker(), dataDTO.getStart(), dataDTO.getEnd()),
+                CHECK_YOUR_API_PLAN
+        );
+
+        if (response == null || response.getResults() == null) {
+            throw new RuntimeException(POLYGON_IS_UNREACHABLE);
         }
+        List<Result> apiResults = response.getResults();
+
         if (apiResults.isEmpty()) {
             throw new NotFoundException(
                     String.format(NO_DATA_FOUND_IN_POLYGON_FOR_PERIOD_F,
@@ -78,17 +74,25 @@ public class RestClientApiService implements ApiService {
         String uriString = UriComponentsBuilder.fromUri(URI.create(String.format(tickerDetailsUrl, ticker)))
                 .queryParam(API_KEY, apiKey)
                 .toUriString();
+
+        return executeRequest(() -> restClient.get()
+                        .uri(uriString)
+                        .accept(MediaType.APPLICATION_JSON)
+                        .retrieve()
+                        .body(TickerResponseData.class),
+                String.format(TICKER_NOT_FOUND_F, ticker),
+                AUTHORIZATION_DENIED
+        );
+    }
+
+    private <T> T executeRequest(Supplier<T> request, String notFoundMessage, String authorizationDeniedMessage) {
         try {
-            return restClient.get()
-                    .uri(uriString)
-                    .accept(MediaType.APPLICATION_JSON)
-                    .retrieve()
-                    .body(TickerResponseData.class);
+            return request.get();
         } catch (RestClientResponseException e) {
             if (e.getStatusCode() == HttpStatus.NOT_FOUND) {
-                throw new NotFoundException(String.format(TICKER_NOT_FOUND_F, ticker));
+                throw new NotFoundException(notFoundMessage);
             } else if (e.getStatusCode() == HttpStatus.FORBIDDEN) {
-                throw new AuthorizationDeniedException(AUTHORIZATION_DENIED);
+                throw new AuthorizationDeniedException(authorizationDeniedMessage);
             }
             throw e;
         }
