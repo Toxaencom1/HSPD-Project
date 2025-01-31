@@ -26,11 +26,13 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import static com.taxah.hspd.util.constant.Params.APPLYING_STRATEGY;
+
+
 @Slf4j
 @Service
 @RequiredArgsConstructor
 public class StockService {
-    public static final String APPLYING_STRATEGY = "Applying strategy: {}";
     private final StockResponseDataRepository stockResponseDataRepository;
     private final UserService userService;
     private final ResultRepository resultRepository;

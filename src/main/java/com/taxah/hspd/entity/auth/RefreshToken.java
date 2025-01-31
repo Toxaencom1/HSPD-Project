@@ -19,7 +19,7 @@ public class RefreshToken {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "refresh_token",unique = true)
+    @Column(name = "refresh_token", unique = true)
     private String refreshToken;
 
     @Override

@@ -72,7 +72,7 @@ public class Result implements Serializable {
     @ToString.Exclude
     private Set<UserResult> users = new HashSet<>();
 
-    public boolean contains(User user){
+    public boolean contains(User user) {
         return users.stream().map(UserResult::getUser).anyMatch(user::equals);
     }
 

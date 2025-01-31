@@ -40,7 +40,7 @@ public interface AuthControllerSwagger {
             description = "Endpoint для идентификации пользователя в приложении.",
             summary = "- Вход",
             responses = {
-                    @ApiResponse(description = "Вход успешно выполнен",responseCode = "200", content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE, schema = @Schema(implementation = JwtResponseDTO.class))),
+                    @ApiResponse(description = "Вход успешно выполнен", responseCode = "200", content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE, schema = @Schema(implementation = JwtResponseDTO.class))),
                     @ApiResponse(description = "Строковое сообщение об ошибке валидации данных переданных пользователем.",
                             responseCode = "400",
                             content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE,
@@ -63,7 +63,7 @@ public interface AuthControllerSwagger {
             description = "Endpoint для обновления Токен Access по Токен Refresh.",
             summary = "- Обновление Токена доступа",
             responses = {
-                    @ApiResponse(description = "Обновление успешно выполнено",responseCode = "201",
+                    @ApiResponse(description = "Обновление успешно выполнено", responseCode = "201",
                             content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE,
                                     schema = @Schema(implementation = JwtResponseDTO.class))),
                     @ApiResponse(description = "Строковое сообщение об ошибке, указывающей, что Токен обновления не найден в базе валидных токенов.",

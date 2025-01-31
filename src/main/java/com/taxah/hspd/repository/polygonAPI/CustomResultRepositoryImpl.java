@@ -13,17 +13,12 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import static com.taxah.hspd.util.constant.Params.*;
+
+
 @Repository
 public class CustomResultRepositoryImpl implements CustomResultRepository {
-    public static final String DATE = "date";
-    public static final String STOCK_RESPONSE_DATA = "stockResponseData";
-    public static final String STOCK_RESPONSE_DATA_ID = STOCK_RESPONSE_DATA + "Id";
-    public static final String STOCK_RESPONSE_DATA_ID_UNDERSCORE = "stock_response_data_id";
-    public static final String OPEN = "open";
-    public static final String CLOSE = "close";
-    public static final String HIGH = "high";
-    public static final String LOW = "low";
-    public static final String CONFLICTS = "conflicts";
+
     @PersistenceContext
     private EntityManager entityManager;
     @Value("${spring.jpa.properties.hibernate.default_batch_fetch_size}")

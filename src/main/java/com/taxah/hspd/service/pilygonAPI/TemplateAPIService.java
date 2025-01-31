@@ -22,17 +22,13 @@ import java.time.LocalDate;
 import java.util.List;
 
 import static com.taxah.hspd.util.constant.Exceptions.*;
+import static com.taxah.hspd.util.constant.Params.*;
+
 
 @Service
 @RequiredArgsConstructor
-public class TemplateAPIService {
-    public static final String ADJUSTED = "adjusted";
-    public static final String SORT = "sort";
-    public static final String API_KEY = "apiKey";
-    public static final String ADJUSTED_BOOLEAN = "true";
-    public static final String SORT_TYPE = "asc";
-    public static final String ACCEPT = "Accept";
-    public static final String APPLICATION_JSON = "application/*json";
+@Deprecated
+public class TemplateAPIService implements ApiService {
 
     @Value("${polygonAPI.url.main}")
     private String mainUrl;
@@ -64,11 +60,12 @@ public class TemplateAPIService {
             return response.getBody();
         } catch (HttpClientErrorException.NotFound e) {
             throw new NotFoundException(String.format(NO_API_RESULTS_FOUND_F, ticker, dateFrom, dateTo));
-        } catch (HttpClientErrorException.Forbidden e){
+        } catch (HttpClientErrorException.Forbidden e) {
             throw new AuthorizationDeniedException(CHECK_YOUR_API_PLAN);
         }
     }
 
+    @Override
     public List<Result> getNewApiResults(GetStockResponseDataDTO dataDTO) {
         List<Result> apiResults = getData(dataDTO.getTicker(), dataDTO.getStart(), dataDTO.getEnd()).getResults();
         if (apiResults.isEmpty()) {
@@ -80,6 +77,7 @@ public class TemplateAPIService {
         return apiResults;
     }
 
+    @Override
     public TickerResponseData getTickerDetails(String ticker) {
         String uriString = UriComponentsBuilder.fromUri(URI.create(String.format(tickerDetailsUrl, ticker)))
                 .queryParam(API_KEY, apiKey)
@@ -96,7 +94,6 @@ public class TemplateAPIService {
                     entity,
                     TickerResponseData.class
             );
-
             return response.getBody();
         } catch (HttpClientErrorException.NotFound e) {
             throw new NotFoundException(String.format(TICKER_NOT_FOUND_F, ticker));

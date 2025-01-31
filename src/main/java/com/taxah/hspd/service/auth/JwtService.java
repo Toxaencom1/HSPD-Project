@@ -19,14 +19,12 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Function;
 
+import static com.taxah.hspd.util.constant.Params.*;
+
+
 @Service
 @RequiredArgsConstructor
 public class JwtService {
-    public static final String ID = "id";
-    public static final String EMAIL = "email";
-    public static final String ROLE = "role";
-    public static final String AUTHORITIES = "authorities";
-    public static final String TYPE = "type";
 
     @Value("${token.signing.key}")
     private String jwtSigningKey;
