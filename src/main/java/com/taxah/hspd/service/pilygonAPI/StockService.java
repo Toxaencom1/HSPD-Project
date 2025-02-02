@@ -44,30 +44,21 @@ public class StockService {
                               List<Result> apiResults,
                               String username,
                               String tickerName,
-                              Optional<StockResponseData> alreadyExist,
+                              Optional<StockResponseData> alreadyExistTicker,
                               GetStockResponseDataDTO dataDTO) {
         User existedUser = userService.findByUsernameWithResults(username);
         List<Result> existedInDatabaseResults = findByDateAndTicker(dataDTO);
 
-        List<Result> results = applyStrategy(chosenStrategy,
+        log.info(APPLYING_STRATEGY, chosenStrategy.getClass().getSimpleName());
+
+        List<Result> results = chosenStrategy.apply(
                 apiResults,
                 existedInDatabaseResults,
-                alreadyExist.orElseGet(() -> StockResponseData.builder().ticker(tickerName).build()),
-                dataDTO
+                alreadyExistTicker.orElseGet(() -> StockResponseData.builder().ticker(tickerName).build())
         );
         if (!addUserToResults(existedUser, results)) {
             throw new AlreadyExistsException(String.format(Exceptions.DATA_ALREADY_EXISTS_F, tickerName));
         }
-    }
-
-    @Transactional(propagation = Propagation.MANDATORY)
-    public List<Result> applyStrategy(SaveStockDataStrategy strategy,
-                                      List<Result> mutableApiResults,
-                                      List<Result> existedInDatabaseResults,
-                                      StockResponseData stockResponseData,
-                                      GetStockResponseDataDTO dataDTO) {
-        log.info(APPLYING_STRATEGY, strategy.getClass().getSimpleName());
-        return strategy.apply(mutableApiResults, existedInDatabaseResults, stockResponseData, dataDTO.getStart(), dataDTO.getEnd());
     }
 
     @Transactional(propagation = Propagation.MANDATORY)

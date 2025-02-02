@@ -8,7 +8,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
@@ -28,7 +27,7 @@ public class NewStockDataStrategy implements SaveStockDataStrategy {
 
     @Transactional
     @Override
-    public List<Result> apply(List<Result> apiResults, List<Result> existedInDatabaseResults, StockResponseData data, LocalDate startDate, LocalDate endDate) {
+    public List<Result> apply(List<Result> apiResults, List<Result> existedInDatabaseResults, StockResponseData data) {
         stockResponseDataRepository.save(data);
         apiResults.forEach(result -> result.setStockResponseData(data));
         List<Result> results = resultRepository.concurrentSaveAll(apiResults);
