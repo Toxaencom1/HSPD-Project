@@ -21,11 +21,6 @@ public class GlobalExceptionHandler implements UserAccessHandler {
 
     private final ErrorEntityRepository errorRepository;
 
-    @ExceptionHandler(NullPointerException.class)
-    public ResponseEntity<ExceptionErrorDTO> handleNullPointerException(NullPointerException e) {
-        return exceptionResponseEntity(e, HttpStatus.INTERNAL_SERVER_ERROR, null);
-    }
-
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ExceptionErrorDTO> handleGlobalException(Exception e) {
         return exceptionResponseEntity(e, HttpStatus.INTERNAL_SERVER_ERROR, ExceptionUtils.getStackTrace(e));

@@ -1,8 +1,10 @@
 package com.taxah.hspd.repository.polygonAPI;
 
 import com.taxah.hspd.entity.polygonAPI.Result;
+import com.taxah.hspd.util.SqlConcurrentRequestHandler;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Propagation;
@@ -17,12 +19,14 @@ import static com.taxah.hspd.util.constant.Params.*;
 
 
 @Repository
+@RequiredArgsConstructor
 public class CustomResultRepositoryImpl implements CustomResultRepository {
 
     @PersistenceContext
     private EntityManager entityManager;
     @Value("${spring.jpa.properties.hibernate.default_batch_fetch_size}")
     private int batchSize;
+    private final SqlConcurrentRequestHandler requestHandler;
 
     @Transactional(propagation = Propagation.MANDATORY)
     @Override
@@ -30,33 +34,17 @@ public class CustomResultRepositoryImpl implements CustomResultRepository {
         List<Result> savedResults = new ArrayList<>();
         List<Result> conflictRows = new ArrayList<>();
 
-        StringBuilder sqlBuilder = new StringBuilder();
-        sqlBuilder.append("INSERT INTO results (")
-                .append(DATE).append(", ")
-                .append(STOCK_RESPONSE_DATA_ID_UNDERSCORE).append(", ")
-                .append(OPEN).append(", ")
-                .append(CLOSE).append(", ")
-                .append(HIGH).append(", ")
-                .append(LOW).append(") ")
-                .append("VALUES (:").append(DATE).append(", :")
-                .append(STOCK_RESPONSE_DATA_ID).append(", :")
-                .append(OPEN).append(", :")
-                .append(CLOSE).append(", :")
-                .append(HIGH).append(", :")
-                .append(LOW).append(") ")
-                .append("ON CONFLICT (").append(DATE).append(", ")
-                .append(STOCK_RESPONSE_DATA_ID_UNDERSCORE).append(") DO NOTHING RETURNING id;");
-        /* StringBuilder description:
-                    "INSERT INTO results (date, stock_response_data_id, open, close, high, low) " +
-                   "VALUES (:date, :stockResponseDataId, :open, :close, :high, :low) " +
-                    "ON CONFLICT (date, stock_response_data_id) DO NOTHING RETURNING id";
-             */
-        String sql = sqlBuilder.toString();
+        /* Sql description .getInsertRequest()
 
+                INSERT INTO results (date, stock_response_data_id, open, close, high, low)
+                VALUES (:date, :stockResponseDataId, :open, :close, :high, :low)
+                ON CONFLICT (date, stock_response_data_id) DO NOTHING RETURNING id;
+
+             */
         for (int i = 0; i < results.size(); i++) {
             Result result = results.get(i);
 
-            Long generatedId = (Long) entityManager.createNativeQuery(sql)
+            Long generatedId = (Long) entityManager.createNativeQuery(requestHandler.getInsertRequest())
                     .setParameter(DATE, result.getDate())
                     .setParameter(STOCK_RESPONSE_DATA_ID, result.getStockResponseData().getId())
                     .setParameter(OPEN, result.getOpen())
@@ -78,9 +66,15 @@ public class CustomResultRepositoryImpl implements CustomResultRepository {
             }
         }
 
+        /* Sql description .getSelectiveRequest()
+
+                SELECT r FROM Result r
+                WHERE (r.date, r.stockResponseData.id) IN :conflicts"
+
+            */
         if (!conflictRows.isEmpty()) {
             List<Result> existingResults = entityManager.createQuery(
-                            "SELECT r FROM Result r WHERE (r." + DATE + ", r." + STOCK_RESPONSE_DATA + ".id) IN :conflicts", Result.class)
+                            requestHandler.getSelectiveRequest(), Result.class)
                     .setParameter(CONFLICTS, conflictRows.stream()
                             .map(r -> new AbstractMap.SimpleEntry<>(r.getDate(), r.getStockResponseData().getId()))
                             .collect(Collectors.toList()))

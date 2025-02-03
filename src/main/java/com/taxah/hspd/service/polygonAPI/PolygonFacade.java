@@ -1,11 +1,11 @@
-package com.taxah.hspd.service.pilygonAPI;
+package com.taxah.hspd.service.polygonAPI;
 
 import com.taxah.hspd.dto.GetStockResponseDataDTO;
 import com.taxah.hspd.dto.HistoricalStockPricesData;
 import com.taxah.hspd.entity.polygonAPI.Result;
 import com.taxah.hspd.entity.polygonAPI.StockResponseData;
-import com.taxah.hspd.service.pilygonAPI.saveStockDataStrategy.SaveStockDataStrategy;
-import com.taxah.hspd.service.pilygonAPI.saveStockDataStrategy.SaveStockStrategyResolver;
+import com.taxah.hspd.service.polygonAPI.saveStockDataStrategy.SaveStockDataStrategy;
+import com.taxah.hspd.service.polygonAPI.saveStockDataStrategy.SaveStockStrategyResolver;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 

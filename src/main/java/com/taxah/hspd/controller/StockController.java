@@ -4,7 +4,7 @@ import com.taxah.hspd.controller.doc.StockControllerSwagger;
 import com.taxah.hspd.controller.handler.UserAccessHandler;
 import com.taxah.hspd.dto.GetStockResponseDataDTO;
 import com.taxah.hspd.dto.HistoricalStockPricesData;
-import com.taxah.hspd.service.pilygonAPI.PolygonFacade;
+import com.taxah.hspd.service.polygonAPI.PolygonFacade;
 import com.taxah.hspd.util.constant.Endpoints;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;

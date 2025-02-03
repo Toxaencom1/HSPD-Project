@@ -13,7 +13,7 @@ import com.taxah.hspd.enums.Roles;
 import com.taxah.hspd.repository.UserResultRepository;
 import com.taxah.hspd.repository.auth.UserRepository;
 import com.taxah.hspd.repository.polygonAPI.ResultRepository;
-import com.taxah.hspd.service.pilygonAPI.PolygonService;
+import com.taxah.hspd.service.polygonAPI.PolygonService;
 import lombok.SneakyThrows;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

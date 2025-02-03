@@ -2,14 +2,11 @@ package com.taxah.hspd.config;
 
 import com.taxah.hspd.controller.filter.JwtAuthenticationFilter;
 import com.taxah.hspd.controller.handler.AuthExceptionHandler;
-import com.taxah.hspd.service.auth.impl.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.AuthenticationProvider;
-import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -28,7 +25,6 @@ import static org.springframework.security.config.http.SessionCreationPolicy.STA
 public class SecurityConfig {
     @Value("${bcrypt.strength}")
     private int bcryptStrength;
-    private final UserService userService;
     private final JwtAuthenticationFilter jwtAuthenticationFilter;
     private final AuthExceptionHandler authExceptionHandler;
 
@@ -41,20 +37,11 @@ public class SecurityConfig {
                         .requestMatchers(SW_UI, SW_RESOURCES, SW_API_DOCS).permitAll()
                         .anyRequest().authenticated())
                 .sessionManagement(manager -> manager.sessionCreationPolicy(STATELESS))
-                .authenticationProvider(authenticationProvider())
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
                 .exceptionHandling(ex -> ex
                         .authenticationEntryPoint(authExceptionHandler)
                 )
                 .build();
-    }
-
-    @Bean
-    public AuthenticationProvider authenticationProvider() {
-        DaoAuthenticationProvider authProvider = new DaoAuthenticationProvider();
-        authProvider.setUserDetailsService(userService);
-        authProvider.setPasswordEncoder(passwordEncoder());
-        return authProvider;
     }
 
     @Bean

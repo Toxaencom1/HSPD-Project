@@ -3,7 +3,6 @@ package com.taxah.hspd.entity.polygonAPI;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
 import lombok.*;
-import org.hibernate.annotations.BatchSize;
 import org.hibernate.proxy.HibernateProxy;
 
 import java.io.Serializable;
@@ -30,7 +29,6 @@ public class StockResponseData implements Serializable {
 
     @OneToMany(mappedBy = "stockResponseData", cascade = CascadeType.PERSIST, orphanRemoval = true, fetch = FetchType.LAZY)
     @JsonProperty("results")
-    @BatchSize(size = 450)
     @ToString.Exclude
     private List<Result> results = new ArrayList<>();
 

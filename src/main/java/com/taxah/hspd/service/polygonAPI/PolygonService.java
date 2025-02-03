@@ -1,4 +1,4 @@
-package com.taxah.hspd.service.pilygonAPI;
+package com.taxah.hspd.service.polygonAPI;
 
 import com.taxah.hspd.dto.GetStockResponseDataDTO;
 import com.taxah.hspd.dto.polygon.TickerResponseData;
